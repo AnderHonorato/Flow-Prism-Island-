@@ -2,7 +2,7 @@
 
 Ilha dinâmica nativa e gratuita para Windows 11, com foco em rapidez e personalização 2D, desenvolvida pela Ander Flow.
 
-**Situação:** v0.1.0-dev (fase inicial; não é release estável).
+**Situação:** v0.2.0-dev (fase inicial; não é release estável).
 
 ## O que já existe no código
 - Janela WPF real, transparente, sem moldura e sempre visível; cápsula compacta que expande no mouse/clique.
@@ -13,8 +13,17 @@ Ilha dinâmica nativa e gratuita para Windows 11, com foco em rapidez e personal
 - Ícone da bandeja com opção de mostrar, recolher e sair.
 - Configurações locais por usuário; autoinício somente por escolha explícita.
 
+## Atualização v0.2.0-dev
+- Sessões de mídia reais pelo Windows GSMTC (Spotify, navegadores e players compatíveis): título, artista, tempo, anterior, reproduzir/pausar e próxima conforme recursos expostos.
+- Volume e silenciar da saída principal do Windows com CoreAudio via NAudio.
+- Barras animadas somente enquanto a mídia estiver tocando. **Ainda não reagem ao espectro de áudio**.
+- Aba Alertas com histórico local de eventos do próprio app; solicitação explícita ao Windows para ler notificações externas (acesso requer identidade MSIX apropriada, não garantido para .exe).
+- Dock Flow opcional e reversível, com abrir arquivos, navegador, configurações e alternar janelas abertas.
+- Seleção/restauração de wallpaper com backup anterior; atalho para configurações nativas da barra de tarefas.
+- O dock **não substitui nem estiliza a barra de tarefas original**. Os recursos de shell mais invasivos permanecem planejados.
+
 ## O que ainda não deve ser considerado pronto
-Controle de mídia GSMTC, detecção de fullscreen, multi-monitor avançado, notificações de terceiros, instalador assinado e integrações externas. Consulte `docs/ACOMPANHAMENTO.md`.
+Detecção automática de fullscreen, multi-monitor avançado, notificações globais sem MSIX, edição visual avançada da taskbar, instalador assinado e integrações de IA. Consulte `docs/ACOMPANHAMENTO.md`.
 
 ## Executar no Windows
 Requer Windows 10/11 x64 e SDK .NET 10 para compilar. Na raiz do projeto:

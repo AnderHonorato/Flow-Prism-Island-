@@ -78,11 +78,12 @@ public partial class MainWindow : Window
         CarregarConfiguracoes();
         AplicarTema();
         AtualizarRelogio();
-        AtualizarAbas("foco");
+        AtualizarAbas("midia");
         AtualizarCronometro();
         CriarBandeja();
         Posicionar();
         relogio.Start();
+        IniciarIntegracoes();
     }
 
     private void Posicionar()
@@ -109,8 +110,8 @@ public partial class MainWindow : Window
 
     private void AjustarJanela(bool expandida)
     {
-        double largura = expandida ? 438 : 232;
-        double altura = expandida ? 351 : 48;
+        double largura = expandida ? 528 : 232;
+        double altura = expandida ? 395 : 48;
         var area = SystemParameters.WorkArea;
         if (expandida) PainelAberto.Visibility = Visibility.Visible;
         IndicadorAbertura.Text = expandida ? "⌃" : "⌄";
@@ -185,23 +186,33 @@ public partial class MainWindow : Window
 
     private void AtualizarAbas(string selecionada)
     {
+        PainelMidia.Visibility = selecionada == "midia" ? Visibility.Visible : Visibility.Collapsed;
         PainelFoco.Visibility = selecionada == "foco" ? Visibility.Visible : Visibility.Collapsed;
+        PainelAlertas.Visibility = selecionada == "alertas" ? Visibility.Visible : Visibility.Collapsed;
+        PainelDesktop.Visibility = selecionada == "desktop" ? Visibility.Visible : Visibility.Collapsed;
         PainelSistema.Visibility = selecionada == "sistema" ? Visibility.Visible : Visibility.Collapsed;
         PainelAjustes.Visibility = selecionada == "ajustes" ? Visibility.Visible : Visibility.Collapsed;
+        AbaMidia.Background = Cor(selecionada == "midia" ? "#E8622A" : "#25242A");
         AbaFoco.Background = Cor(selecionada == "foco" ? "#E8622A" : "#25242A");
+        AbaAlertas.Background = Cor(selecionada == "alertas" ? "#E8622A" : "#25242A");
+        AbaDesktop.Background = Cor(selecionada == "desktop" ? "#E8622A" : "#25242A");
         AbaSistema.Background = Cor(selecionada == "sistema" ? "#E8622A" : "#25242A");
         AbaAjustes.Background = Cor(selecionada == "ajustes" ? "#E8622A" : "#25242A");
         TextoTituloPainel.Text = selecionada switch
         {
+            "midia" => "Sua música. Suas escolhas.",
             "foco" => "Seu tempo, seu ritmo.",
+            "alertas" => "O que merece sua atenção.",
+            "desktop" => "Seu Windows com sua identidade.",
             "sistema" => "Seu Windows em um olhar.",
             _ => "Sua ilha, suas regras."
         };
         TextoSubtitulo.Text = selecionada switch
         {
-            "foco" => "Concentre-se no que está fazendo.",
-            "sistema" => "Informações atuais do dispositivo.",
-            _ => "Preferências mantidas neste computador."
+            "midia" => "Controles reais para players compatíveis.",
+            "desktop" => "Personalização opcional e reversível.",
+            "alertas" => "Sem capturas secretas nem notificações inventadas.",
+            _ => "Ander Flow Prism Island"
         };
         AtualizarEstadoSistema();
     }
@@ -240,9 +251,11 @@ public partial class MainWindow : Window
         foco.Avancar(agora - ultimoTick);
         ultimoTick = agora;
         if (estavaRodando && foco.Restante == TimeSpan.Zero)
+        {
             iconeBandeja?.ShowBalloonTip(3500, "Prism Island", "Sua sessão de foco terminou.", Forms.ToolTipIcon.Info);
-        StatusCompacto.Text = DateTime.Now.ToString("HH:mm") +
-            (foco.Rodando ? "  •  Foco ativo" : "  •  Ander Flow");
+            RegistrarAlerta("Foco", "Sua sessão terminou.");
+        }
+        AtualizarStatusCompacto();
         AtualizarCronometro();
         if (PainelSistema.Visibility == Visibility.Visible) AtualizarEstadoSistema();
     }
@@ -317,7 +330,7 @@ public partial class MainWindow : Window
         {
             Directory.CreateDirectory(Path.GetDirectoryName(caminhoConfiguracoes)!);
             File.WriteAllText(caminhoConfiguracoes,
-                JsonSerializer.Serialize(new Preferencias(tema, iniciarComWindows)));
+                JsonSerializer.Serialize(new Preferencias(tema, iniciarComWindows, dockAtivo, papelAnterior)));
         }
         catch (Exception erro) { TextoRodape.Text = "Falha ao salvar: " + erro.Message; }
     }
@@ -333,17 +346,19 @@ public partial class MainWindow : Window
                 {
                     tema = new[] { "prism", "preto", "claro", "mono" }.Contains(preferencias.Tema)
                         ? preferencias.Tema : "prism";
+                    dockAtivo = preferencias.DockAtivo;
+                    papelAnterior = preferencias.PapelAnterior;
                 }
             }
             using var chave = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run");
             iniciarComWindows = chave?.GetValue("AnderFlowPrismIsland") is string;
             BotaoAutoInicio.Content = "Iniciar com Windows: " + (iniciarComWindows ? "ligado" : "desligado");
-            TextoRodape.Text = "Ander Flow • v0.1.0-dev" + (atalhoDisponivel ? "" : " • Atalho em uso");
+            TextoRodape.Text = "Ander Flow • v0.2.0-dev" + (atalhoDisponivel ? "" : " • Atalho em uso");
         }
         catch { tema = "prism"; iniciarComWindows = false; }
     }
 
-    private record Preferencias(string Tema, bool IniciarComWindows);
+    private record Preferencias(string Tema, bool IniciarComWindows, bool DockAtivo = false, string? PapelAnterior = null);
 
     private void CriarBandeja()
     {
@@ -386,6 +401,7 @@ public partial class MainWindow : Window
         if (encerrando == false) encerrando = true;
         recolhimento.Stop();
         relogio.Stop();
+        PararIntegracoes();
         if (atalhoDisponivel && origemMensagens is not null)
             UnregisterHotKey(origemMensagens.Handle, HotkeyId);
         if (origemMensagens is not null) origemMensagens.RemoveHook(ReceberMensagem);

@@ -36,4 +36,19 @@ Testar("Ilha alterna e fixa sem fechar acidentalmente", () => {
     m.Desfixar(); m.RecolherSeNaoFixada();
     Exigir(m.Estado == EstadoIlha.Recolhida, "Não recolheu");
 });
+Testar("Mídia sem sessão não inventa título nem habilita controles", () => {
+    var m = MidiaVisivel.Vazia();
+    Exigir(!m.TemSessao && m.Titulo == "Nenhuma mídia em reprodução", "Estado sem música incorreto");
+    Exigir(!m.PodePausar && !m.PodeAvancar, "Controles sem sessão deveriam estar desativados");
+});
+Testar("Mídia respeita player e recursos realmente expostos", () => {
+    var m = MidiaVisivel.DaSessao("Canção", "Artista", "Spotify", true, true, false);
+    Exigir(m.TemSessao && m.Titulo == "Canção" && m.Tocando, "Metadados incorretos");
+    Exigir(m.PodePausar && !m.PodeAvancar, "Capabilities ignoradas");
+});
+Testar("Volume sempre limitado de 0 a 100", () => {
+    Exigir(VolumeSistema.LimitarPorcentagem(-4) == 0, "Negativo");
+    Exigir(VolumeSistema.LimitarPorcentagem(400) == 100, "Acima de 100");
+    Exigir(VolumeSistema.LimitarPorcentagem(50) == 50, "Meio");
+});
 Console.WriteLine($"VALIDADOS: {verificados} testes de lógica.");

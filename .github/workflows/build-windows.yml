@@ -1,7 +1,7 @@
 name: Build e instalador Windows
 on:
   push:
-    branches: [main]
+    branches: [main, 'feat/**']
   workflow_dispatch:
 
 permissions:
@@ -48,22 +48,22 @@ jobs:
       - name: Empacotar versão portátil
         shell: pwsh
         run: |
-          Compress-Archive -Path "dist\portable\*" -DestinationPath "dist\Ander-Flow-Prism-Island-v0.1.0-win-x64-portable.zip" -CompressionLevel Optimal -Force
-          Get-FileHash "dist\Ander-Flow-Prism-Island-v0.1.0-win-x64-setup.exe" -Algorithm SHA256 | Select-Object Hash,Path
+          Compress-Archive -Path "dist\portable\*" -DestinationPath "dist\Ander-Flow-Prism-Island-v0.2.0-win-x64-portable.zip" -CompressionLevel Optimal -Force
+          Get-FileHash "dist\Ander-Flow-Prism-Island-v0.2.0-win-x64-setup.exe" -Algorithm SHA256 | Select-Object Hash,Path
       - name: Salvar artefatos da build
         uses: actions/upload-artifact@v4
         with:
-          name: flow-prism-island-v0.1.0-windows
+          name: flow-prism-island-v0.2.0-windows
           path: |
-            dist/Ander-Flow-Prism-Island-v0.1.0-win-x64-setup.exe
-            dist/Ander-Flow-Prism-Island-v0.1.0-win-x64-portable.zip
+            dist/Ander-Flow-Prism-Island-v0.2.0-win-x64-setup.exe
+            dist/Ander-Flow-Prism-Island-v0.2.0-win-x64-portable.zip
           if-no-files-found: error
       - name: Publicar pré-lançamento com instalador
         if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.0-preview.1
-          name: "Prism Island v0.1.0 — Prévia Windows"
+          tag_name: v0.2.0-preview.1
+          name: "Prism Island v0.2.0 — Mídia e Desktop (Prévia)"
           prerelease: true
           draft: false
           generate_release_notes: false
@@ -71,10 +71,11 @@ jobs:
           body: |
             ## Prévia de desenvolvimento
             Instalador Windows x64 com runtime .NET incluído e desinstalador.
-            Testes automatizados: temporizador e estados da ilha.
+            Testes automatizados: temporizador, estados da ilha, metadados e volume.
+            Mídia pelo Windows GSMTC; volume via CoreAudio/NAudio; dock opcional. Notificações globais dependem de permissões.
             **Ainda não é versão estável.** Layout/atalhos/monitores precisam de QA visual adicional.
             Código-fonte e notas no README.
           files: |
-            dist/Ander-Flow-Prism-Island-v0.1.0-win-x64-setup.exe
-            dist/Ander-Flow-Prism-Island-v0.1.0-win-x64-portable.zip
+            dist/Ander-Flow-Prism-Island-v0.2.0-win-x64-setup.exe
+            dist/Ander-Flow-Prism-Island-v0.2.0-win-x64-portable.zip
           fail_on_unmatched_files: true

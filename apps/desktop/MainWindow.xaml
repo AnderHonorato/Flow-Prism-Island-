@@ -15,7 +15,7 @@
    <Setter Property="FontFamily" Value="Segoe UI"/>
    <Setter Property="FontSize" Value="12"/>
    <Setter Property="FontWeight" Value="SemiBold"/>
-   <Setter Property="Padding" Value="13,9"/>
+   <Setter Property="Padding" Value="7,9"/>
    <Setter Property="Margin" Value="3"/>
    <Setter Property="Cursor" Value="Hand"/>
    <Setter Property="BorderThickness" Value="0"/>
@@ -70,12 +70,84 @@
       <Button Grid.Column="1" x:Name="BotaoFixar" Content="Fixar" Style="{StaticResource Acao}"
               Click="AoFixar" ToolTip="Manter o painel aberto"/>
      </Grid>
-     <UniformGrid Columns="3" Margin="0,0,0,10">
+     <UniformGrid Columns="6" Margin="0,0,0,8">
+      <Button x:Name="AbaMidia" Content="Mídia" Style="{StaticResource Acao}" Click="AoSelecionarMidia"/>
       <Button x:Name="AbaFoco" Content="Foco" Style="{StaticResource Acao}" Click="AoSelecionarFoco"/>
+      <Button x:Name="AbaAlertas" Content="Alertas" Style="{StaticResource Acao}" Click="AoSelecionarAlertas"/>
+      <Button x:Name="AbaDesktop" Content="Desktop" Style="{StaticResource Acao}" Click="AoSelecionarDesktop"/>
       <Button x:Name="AbaSistema" Content="Sistema" Style="{StaticResource Acao}" Click="AoSelecionarSistema"/>
       <Button x:Name="AbaAjustes" Content="Ajustes" Style="{StaticResource Acao}" Click="AoSelecionarAjustes"/>
      </UniformGrid>
-     <Border x:Name="PainelFoco" Background="#18171D" CornerRadius="16" Padding="13">
+     <Border x:Name="PainelMidia" Background="#18171D" CornerRadius="16" Padding="13" Visibility="Collapsed">
+      <StackPanel>
+       <TextBlock Text="TOCANDO AGORA" Foreground="#E8622A" FontWeight="Bold" FontSize="10" Margin="2,0,0,9"/>
+       <Grid>
+        <Grid.ColumnDefinitions><ColumnDefinition Width="50"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+        <Border Width="42" Height="42" Background="#372522" CornerRadius="14" BorderBrush="#E8622A" BorderThickness="1">
+         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <Rectangle x:Name="BarraMusica1" Height="8" Width="4" Fill="#E8622A" Margin="1,0"/>
+          <Rectangle x:Name="BarraMusica2" Height="16" Width="4" Fill="#E8622A" Margin="1,0"/>
+          <Rectangle x:Name="BarraMusica3" Height="11" Width="4" Fill="#E8622A" Margin="1,0"/>
+         </StackPanel>
+        </Border>
+        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+         <TextBlock x:Name="TextoMusica" Text="Nenhuma mídia em reprodução" FontSize="14" FontWeight="SemiBold"
+                    Foreground="#F5F5F0" TextTrimming="CharacterEllipsis" />
+         <TextBlock x:Name="TextoArtista" Text="Abra Spotify, YouTube ou outro player compatível"
+                    Foreground="#A59FA3" TextTrimming="CharacterEllipsis" FontSize="11" Margin="0,4,0,0"/>
+         <TextBlock x:Name="TextoOrigem" Foreground="#E8622A" FontSize="10" Text=""/>
+        </StackPanel>
+       </Grid>
+       <ProgressBar x:Name="ProgressoFaixa" Minimum="0" Maximum="100" Value="0" Height="3"
+                    Foreground="#E8622A" Background="#383239" Margin="3,14,3,7"/>
+       <Grid>
+        <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions>
+        <TextBlock x:Name="TextoPosicao" Text="--:--" FontSize="10" Foreground="#AAA49E"/>
+        <TextBlock x:Name="TextoDuracao" Text="--:--" Grid.Column="1" HorizontalAlignment="Right" FontSize="10" Foreground="#AAA49E"/>
+       </Grid>
+       <UniformGrid Columns="3" Margin="0,8,0,9">
+        <Button x:Name="BotaoAnterior" Content="Anterior" Style="{StaticResource Acao}" Click="AoMidiaAnterior" IsEnabled="False"/>
+        <Button x:Name="BotaoPlay" Content="Reproduzir" Style="{StaticResource Acao}" Background="#E8622A" Click="AoMidiaPlayPause" IsEnabled="False"/>
+        <Button x:Name="BotaoProximo" Content="Próxima" Style="{StaticResource Acao}" Click="AoMidiaProxima" IsEnabled="False"/>
+       </UniformGrid>
+       <Grid Margin="3,0,3,0">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="58"/><ColumnDefinition/><ColumnDefinition Width="45"/></Grid.ColumnDefinitions>
+        <Button x:Name="BotaoMudo" Content="Som" Style="{StaticResource Acao}" Click="AoAlternarMudo"/>
+        <Slider x:Name="SliderVolume" Grid.Column="1" Minimum="0" Maximum="100" Value="50"
+                VerticalAlignment="Center" TickFrequency="1" ValueChanged="AoAlterarVolume"/>
+        <TextBlock x:Name="TextoVolume" Text="--%" Grid.Column="2" Foreground="#F5F5F0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+       </Grid>
+       <TextBlock x:Name="TextoRetornoMidia" FontSize="10" Foreground="#A6A0A1" Margin="3,9,0,0"
+                  Text="Aguardando uma sessão de mídia do Windows"/>
+      </StackPanel>
+     </Border>
+     <Border x:Name="PainelAlertas" Background="#18171D" CornerRadius="16" Padding="13" Visibility="Collapsed">
+      <StackPanel>
+       <TextBlock Text="NOTIFICAÇÕES" Foreground="#E8622A" FontWeight="Bold" FontSize="11"/>
+       <ScrollViewer MaxHeight="135" Margin="0,8,0,7" VerticalScrollBarVisibility="Auto">
+        <StackPanel x:Name="ListaAlertas">
+         <TextBlock Text="Sem alertas do Prism Island" FontSize="11" Foreground="#A6A0A1"/>
+        </StackPanel>
+       </ScrollViewer>
+       <Button Content="Pedir acesso às notificações do Windows" Click="AoSolicitarNotificacoes"
+               Style="{StaticResource Acao}"/>
+       <TextBlock x:Name="TextoAcessoAlertas" Text="Notificações de outros aplicativos dependem de permissão e identidade do pacote."
+                  FontSize="10" TextWrapping="Wrap" Foreground="#A6A0A1" Margin="5,7,5,0"/>
+       <Button Content="Limpar meus alertas" Click="AoLimparAlertas" Style="{StaticResource Acao}"/>
+      </StackPanel>
+     </Border>
+     <Border x:Name="PainelDesktop" Background="#18171D" CornerRadius="16" Padding="13" Visibility="Collapsed">
+      <StackPanel>
+       <TextBlock Text="PERSONALIZAR WINDOWS" Foreground="#E8622A" FontWeight="Bold" FontSize="11" Margin="2,0,0,7"/>
+       <Button x:Name="BotaoDock" Content="Ativar Dock Flow" Click="AoAlternarDock" Background="#E8622A" Style="{StaticResource Acao}"/>
+       <Button Content="Escolher papel de parede" Click="AoEscolherWallpaper" Style="{StaticResource Acao}"/>
+       <Button Content="Restaurar papel de parede anterior" Click="AoRestaurarWallpaper" Style="{StaticResource Acao}"/>
+       <Button Content="Personalizar barra de tarefas" Click="AoAbrirBarraWindows" Style="{StaticResource Acao}"/>
+       <TextBlock x:Name="TextoDesktop" Text="Dock flutuante independente. A barra original não é modificada."
+                  FontSize="10" TextWrapping="Wrap" Foreground="#A6A0A1" Margin="5,8,5,0"/>
+      </StackPanel>
+     </Border>
+     <Border x:Name="PainelFoco" Background="#18171D" CornerRadius="16" Padding="13" Visibility="Collapsed">
       <StackPanel>
        <TextBlock Text="SESSÃO DE FOCO" Foreground="#E8622A" FontWeight="Bold"
                   FontSize="10"/>
@@ -117,7 +189,7 @@
      </Border>
      <Grid Margin="6,12,4,0">
       <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-      <TextBlock x:Name="TextoRodape" Text="Ander Flow • v0.1.0-dev" Foreground="#77717A"
+      <TextBlock x:Name="TextoRodape" Text="Ander Flow • v0.2.0-dev" Foreground="#77717A"
                  FontSize="10" VerticalAlignment="Center"/>
       <Button Grid.Column="1" Content="Recolher" Style="{StaticResource Acao}"
               Padding="10,6" Click="AoRecolher"/>
