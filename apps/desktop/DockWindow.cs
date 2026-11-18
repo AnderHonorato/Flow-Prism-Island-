@@ -10,6 +10,8 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using Brush = System.Windows.Media.Brush;
 using Button = System.Windows.Controls.Button;
+using Brushes = System.Windows.Media.Brushes;
+using Orientation = System.Windows.Controls.Orientation;
 
 namespace AnderFlowPrismIsland;
 
@@ -63,7 +65,7 @@ public sealed class DockWindow : Window
             CornerRadius = new CornerRadius(20),
             Padding = new Thickness(10, 9, 10, 9)
         };
-        var linha = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
+        var linha = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = System.Windows.VerticalAlignment.Center };
         linha.Children.Add(CriarBotao("FL", "Abrir Prism Island", () => this.abrirMidia(), true));
         linha.Children.Add(CriarBotao("Files", "Explorador de arquivos", () => Iniciar("explorer.exe")));
         linha.Children.Add(CriarBotao("Web", "Navegador padrão", () => Iniciar("https://www.google.com")));
@@ -73,7 +75,7 @@ public sealed class DockWindow : Window
             Width = 1, Height = 38, Background = Cor("#544F55"),
             Margin = new Thickness(9, 0, 9, 0)
         });
-        var grupos = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
+        var grupos = new StackPanel { VerticalAlignment = System.Windows.VerticalAlignment.Center };
         grupos.Children.Add(new TextBlock
         {
             Text = "JANELAS ABERTAS", Foreground = Cor("#A19BA1"),
@@ -114,8 +116,8 @@ public sealed class DockWindow : Window
         border.SetBinding(Border.BackgroundProperty, new System.Windows.Data.Binding("Background")
         { RelativeSource = new System.Windows.Data.RelativeSource(System.Windows.Data.RelativeSourceMode.TemplatedParent) });
         var presenter = new FrameworkElementFactory(typeof(ContentPresenter));
-        presenter.SetValue(HorizontalAlignmentProperty, HorizontalAlignment.Center);
-        presenter.SetValue(VerticalAlignmentProperty, VerticalAlignment.Center);
+        presenter.SetValue(HorizontalAlignmentProperty, System.Windows.HorizontalAlignment.Center);
+        presenter.SetValue(VerticalAlignmentProperty, System.Windows.VerticalAlignment.Center);
         presenter.SetValue(ContentPresenter.MarginProperty, new Thickness(8, 5, 8, 5));
         border.AppendChild(presenter);
         template.VisualTree = border;
