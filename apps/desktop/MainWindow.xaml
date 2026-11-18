@@ -1,0 +1,129 @@
+<Window x:Class="AnderFlowPrismIsland.MainWindow"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ Title="Ander Flow Prism Island" Width="232" Height="48"
+ Background="Transparent" WindowStyle="None" AllowsTransparency="True"
+ Topmost="True" ResizeMode="NoResize" ShowInTaskbar="False"
+ SnapsToDevicePixels="True"
+ Loaded="AoCarregar" Closing="AoFechar"
+ MouseEnter="AoEntrar" MouseLeave="AoSair"
+ PreviewKeyDown="AoPressionarTecla">
+ <Window.Resources>
+  <Style x:Key="Acao" TargetType="Button">
+   <Setter Property="Background" Value="#25242A"/>
+   <Setter Property="Foreground" Value="#F7F5F0"/>
+   <Setter Property="FontFamily" Value="Segoe UI"/>
+   <Setter Property="FontSize" Value="12"/>
+   <Setter Property="FontWeight" Value="SemiBold"/>
+   <Setter Property="Padding" Value="13,9"/>
+   <Setter Property="Margin" Value="3"/>
+   <Setter Property="Cursor" Value="Hand"/>
+   <Setter Property="BorderThickness" Value="0"/>
+   <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+   <Setter Property="Template">
+    <Setter.Value><ControlTemplate TargetType="Button">
+     <Border Background="{TemplateBinding Background}" CornerRadius="11" Padding="{TemplateBinding Padding}">
+      <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+     </Border>
+     <ControlTemplate.Triggers>
+      <Trigger Property="IsMouseOver" Value="True"><Setter Property="Opacity" Value="0.83"/></Trigger>
+      <Trigger Property="IsKeyboardFocused" Value="True"><Setter Property="Opacity" Value="0.7"/></Trigger>
+     </ControlTemplate.Triggers>
+    </ControlTemplate></Setter.Value>
+   </Setter>
+  </Style>
+ </Window.Resources>
+ <Border x:Name="BordaPrincipal" CornerRadius="23" Background="#0A0A0F"
+         BorderBrush="#585048" BorderThickness="1" SnapsToDevicePixels="True">
+  <StackPanel>
+   <Grid Height="45" MouseLeftButtonUp="AoClicarCabecalho" Cursor="Hand"
+         ToolTip="Clique para abrir ou recolher. Ctrl+Shift+Espaço também funciona.">
+    <Grid.ColumnDefinitions>
+     <ColumnDefinition Width="46"/>
+     <ColumnDefinition Width="*"/>
+     <ColumnDefinition Width="36"/>
+    </Grid.ColumnDefinitions>
+    <Canvas Width="24" Height="24" Margin="11,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+     <Ellipse Width="21" Height="21" Stroke="#E8622A" StrokeThickness="2"/>
+     <Ellipse Width="7" Height="7" Fill="#E8622A" Canvas.Left="7" Canvas.Top="7"/>
+    </Canvas>
+    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+     <TextBlock x:Name="TituloPrincipal" FontWeight="Bold" FontFamily="Segoe UI"
+                FontSize="11" Foreground="#F5F5F0" Text="PRISM ISLAND"/>
+     <TextBlock x:Name="StatusCompacto" FontSize="10" Foreground="#AAA49E"
+                Text="Ander Flow" />
+    </StackPanel>
+    <TextBlock Grid.Column="2" x:Name="IndicadorAbertura" Text="⌄" Foreground="#E8622A"
+               FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+   </Grid>
+   <Border x:Name="PainelAberto" Visibility="Collapsed" Padding="14,0,14,14">
+    <StackPanel>
+     <Border Height="1" Margin="2,1,2,12" Background="#383239"/>
+     <Grid Margin="5,0,5,10">
+      <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+      <StackPanel>
+       <TextBlock x:Name="TextoTituloPainel" Text="Um espaço para o que importa." Foreground="#F5F5F0"
+                  FontSize="16" FontWeight="SemiBold"/>
+       <TextBlock x:Name="TextoSubtitulo" Text="Rápido, discreto e sempre por perto."
+                  FontSize="11" Foreground="#98949A" Margin="0,4,0,0"/>
+      </StackPanel>
+      <Button Grid.Column="1" x:Name="BotaoFixar" Content="Fixar" Style="{StaticResource Acao}"
+              Click="AoFixar" ToolTip="Manter o painel aberto"/>
+     </Grid>
+     <UniformGrid Columns="3" Margin="0,0,0,10">
+      <Button x:Name="AbaFoco" Content="Foco" Style="{StaticResource Acao}" Click="AoSelecionarFoco"/>
+      <Button x:Name="AbaSistema" Content="Sistema" Style="{StaticResource Acao}" Click="AoSelecionarSistema"/>
+      <Button x:Name="AbaAjustes" Content="Ajustes" Style="{StaticResource Acao}" Click="AoSelecionarAjustes"/>
+     </UniformGrid>
+     <Border x:Name="PainelFoco" Background="#18171D" CornerRadius="16" Padding="13">
+      <StackPanel>
+       <TextBlock Text="SESSÃO DE FOCO" Foreground="#E8622A" FontWeight="Bold"
+                  FontSize="10"/>
+       <TextBlock x:Name="TextoCronometro" Text="25:00" Foreground="#F5F5F0"
+                  FontSize="42" FontWeight="SemiBold" FontFamily="Segoe UI" HorizontalAlignment="Center"
+                  Margin="0,1,0,1"/>
+       <TextBlock x:Name="TextoEstadoFoco" Text="Pronto para começar" Foreground="#A9A6A5"
+                  FontSize="11" HorizontalAlignment="Center" Margin="0,0,0,6"/>
+       <UniformGrid Columns="2">
+        <Button x:Name="BotaoTemporizador" Content="Iniciar" Style="{StaticResource Acao}"
+                Background="#E8622A" Click="AoAlternarTemporizador"/>
+        <Button Content="Reiniciar" Style="{StaticResource Acao}" Click="AoReiniciarTemporizador"/>
+       </UniformGrid>
+      </StackPanel>
+     </Border>
+     <Border x:Name="PainelSistema" Background="#18171D" CornerRadius="16"
+             Padding="16" Visibility="Collapsed">
+      <StackPanel>
+       <TextBlock Text="ESTADO DO WINDOWS" Foreground="#E8622A" FontWeight="Bold" FontSize="10"/>
+       <TextBlock x:Name="TextoMonitor" Text="Monitor principal" Foreground="#F5F5F0" Margin="0,10,0,0" FontSize="13"/>
+       <TextBlock x:Name="TextoMemoria" Text="Uso do aplicativo" Foreground="#B9B5B3" Margin="0,8,0,0" FontSize="12"/>
+       <TextBlock x:Name="TextoUptime" Text="Atividade do sistema" Foreground="#B9B5B3" Margin="0,8,0,0" FontSize="12"/>
+       <Button Content="Configurações de tela" Style="{StaticResource Acao}"
+               Margin="0,12,0,0" Click="AoAbrirConfiguracoesWindows"/>
+      </StackPanel>
+     </Border>
+     <Border x:Name="PainelAjustes" Background="#18171D" CornerRadius="16"
+             Padding="12" Visibility="Collapsed">
+      <StackPanel>
+       <TextBlock Text="PERSONALIZAÇÃO" Foreground="#E8622A" FontSize="10" FontWeight="Bold"
+                  Margin="5,3,0,8"/>
+       <Button x:Name="BotaoTema" Content="Tema: Prism Flow" Style="{StaticResource Acao}"
+               Click="AoAlternarTema"/>
+       <Button x:Name="BotaoAutoInicio" Content="Iniciar com Windows: desligado"
+               Style="{StaticResource Acao}" Click="AoAlternarAutoInicio"/>
+       <TextBlock Text="Atalho global: Ctrl + Shift + Espaço" Foreground="#B2ABA4"
+                  Margin="6,9,0,3" FontSize="11"/>
+      </StackPanel>
+     </Border>
+     <Grid Margin="6,12,4,0">
+      <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+      <TextBlock x:Name="TextoRodape" Text="Ander Flow • v0.1.0-dev" Foreground="#77717A"
+                 FontSize="10" VerticalAlignment="Center"/>
+      <Button Grid.Column="1" Content="Recolher" Style="{StaticResource Acao}"
+              Padding="10,6" Click="AoRecolher"/>
+     </Grid>
+    </StackPanel>
+   </Border>
+  </StackPanel>
+ </Border>
+</Window>

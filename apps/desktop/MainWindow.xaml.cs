@@ -1,0 +1,398 @@
+using AnderFlowPrismIsland.Logic;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Text.Json;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Threading;
+using Microsoft.Win32;
+using Forms = System.Windows.Forms;
+using Drawing = System.Drawing;
+
+namespace AnderFlowPrismIsland;
+
+public partial class MainWindow : Window
+{
+    private const int HotkeyId = 7711;
+    private const int WmHotkey = 0x0312;
+    private const uint ModCtrlShift = 0x0002 | 0x0004;
+    private readonly MaquinaIlha ilha = new();
+    private readonly Temporizador foco = new(TimeSpan.FromMinutes(25));
+    private readonly DispatcherTimer relogio = new() { Interval = TimeSpan.FromSeconds(1) };
+    private readonly DispatcherTimer recolhimento = new() { Interval = TimeSpan.FromMilliseconds(760) };
+    private readonly string caminhoConfiguracoes = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        "Ander Flow", "Prism Island", "configuracoes.json");
+    private DateTime ultimoTick = DateTime.UtcNow;
+    private Forms.NotifyIcon? iconeBandeja;
+    private HwndSource? origemMensagens;
+    private bool atalhoDisponivel;
+    private string tema = "prism";
+    private bool iniciarComWindows;
+    private bool encerrando;
+
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern bool RegisterHotKey(IntPtr janela, int id, uint modificadores, uint tecla);
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern bool UnregisterHotKey(IntPtr janela, int id);
+
+    public MainWindow()
+    {
+        InitializeComponent();
+        relogio.Tick += (_, _) => AtualizarRelogio();
+        recolhimento.Tick += (_, _) =>
+        {
+            recolhimento.Stop();
+            if (!IsMouseOver && ilha.Estado != EstadoIlha.Fixada)
+                Recolher();
+        };
+    }
+
+    protected override void OnSourceInitialized(EventArgs e)
+    {
+        base.OnSourceInitialized(e);
+        origemMensagens = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
+        origemMensagens.AddHook(ReceberMensagem);
+        atalhoDisponivel = RegisterHotKey(origemMensagens.Handle, HotkeyId, ModCtrlShift, 0x20);
+    }
+
+    private IntPtr ReceberMensagem(IntPtr hwnd, int mensagem, IntPtr wparam, IntPtr lparam, ref bool tratado)
+    {
+        if (mensagem == WmHotkey && wparam.ToInt32() == HotkeyId)
+        {
+            if (ilha.EstaExpandida) Recolher();
+            else Expandir();
+            tratado = true;
+        }
+        return IntPtr.Zero;
+    }
+
+    private void AoCarregar(object sender, RoutedEventArgs e)
+    {
+        CarregarConfiguracoes();
+        AplicarTema();
+        AtualizarRelogio();
+        AtualizarAbas("foco");
+        AtualizarCronometro();
+        CriarBandeja();
+        Posicionar();
+        relogio.Start();
+    }
+
+    private void Posicionar()
+    {
+        var area = SystemParameters.WorkArea;
+        Left = area.Left + (area.Width - Width) / 2;
+        Top = area.Top + 8;
+    }
+
+    private void Animar(DependencyProperty propriedade, double valor, int duracao = 220)
+    {
+        if (!SystemParameters.MenuAnimation)
+        {
+            SetValue(propriedade, valor);
+            return;
+        }
+        var animacao = new DoubleAnimation(valor, TimeSpan.FromMilliseconds(duracao))
+        {
+            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut },
+            FillBehavior = FillBehavior.HoldEnd
+        };
+        BeginAnimation(propriedade, animacao, HandoffBehavior.SnapshotAndReplace);
+    }
+
+    private void AjustarJanela(bool expandida)
+    {
+        double largura = expandida ? 438 : 232;
+        double altura = expandida ? 351 : 48;
+        var area = SystemParameters.WorkArea;
+        if (expandida) PainelAberto.Visibility = Visibility.Visible;
+        IndicadorAbertura.Text = expandida ? "⌃" : "⌄";
+        Animar(WidthProperty, largura);
+        Animar(HeightProperty, altura);
+        Animar(LeftProperty, area.Left + (area.Width - largura) / 2);
+        if (!expandida)
+            PainelAberto.Visibility = Visibility.Collapsed;
+    }
+
+    private void Expandir()
+    {
+        recolhimento.Stop();
+        ilha.Expandir();
+        AjustarJanela(true);
+    }
+
+    private void Recolher()
+    {
+        recolhimento.Stop();
+        ilha.Recolher();
+        BotaoFixar.Content = "Fixar";
+        AjustarJanela(false);
+    }
+
+    private void AoClicarCabecalho(object sender, MouseButtonEventArgs e)
+    {
+        if (ilha.EstaExpandida) Recolher();
+        else Expandir();
+    }
+
+    private void AoEntrar(object sender, System.Windows.Input.MouseEventArgs e)
+    {
+        recolhimento.Stop();
+        if (!ilha.EstaExpandida) Expandir();
+    }
+
+    private void AoSair(object sender, System.Windows.Input.MouseEventArgs e)
+    {
+        if (ilha.Estado != EstadoIlha.Fixada)
+        {
+            recolhimento.Stop();
+            recolhimento.Start();
+        }
+    }
+
+    private void AoPressionarTecla(object sender, System.Windows.Input.KeyEventArgs e)
+    {
+        if (e.Key == Key.Escape)
+        {
+            Recolher();
+            e.Handled = true;
+        }
+    }
+
+    private void AoFixar(object sender, RoutedEventArgs e)
+    {
+        if (ilha.Estado == EstadoIlha.Fixada)
+        {
+            ilha.Desfixar();
+            BotaoFixar.Content = "Fixar";
+        }
+        else
+        {
+            ilha.Fixar();
+            BotaoFixar.Content = "Soltar";
+            recolhimento.Stop();
+        }
+    }
+
+    private void AoRecolher(object sender, RoutedEventArgs e) => Recolher();
+
+    private void AtualizarAbas(string selecionada)
+    {
+        PainelFoco.Visibility = selecionada == "foco" ? Visibility.Visible : Visibility.Collapsed;
+        PainelSistema.Visibility = selecionada == "sistema" ? Visibility.Visible : Visibility.Collapsed;
+        PainelAjustes.Visibility = selecionada == "ajustes" ? Visibility.Visible : Visibility.Collapsed;
+        AbaFoco.Background = Cor(selecionada == "foco" ? "#E8622A" : "#25242A");
+        AbaSistema.Background = Cor(selecionada == "sistema" ? "#E8622A" : "#25242A");
+        AbaAjustes.Background = Cor(selecionada == "ajustes" ? "#E8622A" : "#25242A");
+        TextoTituloPainel.Text = selecionada switch
+        {
+            "foco" => "Seu tempo, seu ritmo.",
+            "sistema" => "Seu Windows em um olhar.",
+            _ => "Sua ilha, suas regras."
+        };
+        TextoSubtitulo.Text = selecionada switch
+        {
+            "foco" => "Concentre-se no que está fazendo.",
+            "sistema" => "Informações atuais do dispositivo.",
+            _ => "Preferências mantidas neste computador."
+        };
+        AtualizarEstadoSistema();
+    }
+
+    private void AoSelecionarFoco(object sender, RoutedEventArgs e) => AtualizarAbas("foco");
+    private void AoSelecionarSistema(object sender, RoutedEventArgs e) => AtualizarAbas("sistema");
+    private void AoSelecionarAjustes(object sender, RoutedEventArgs e) => AtualizarAbas("ajustes");
+
+    private void AoAlternarTemporizador(object sender, RoutedEventArgs e)
+    {
+        if (foco.Rodando) foco.Pausar(); else foco.Iniciar();
+        ultimoTick = DateTime.UtcNow;
+        AtualizarCronometro();
+    }
+
+    private void AoReiniciarTemporizador(object sender, RoutedEventArgs e)
+    {
+        foco.Reiniciar();
+        AtualizarCronometro();
+    }
+
+    private void AtualizarCronometro()
+    {
+        TextoCronometro.Text = $"{(int)foco.Restante.TotalMinutes:00}:{foco.Restante.Seconds:00}";
+        TextoEstadoFoco.Text = foco.Restante == TimeSpan.Zero ? "Sessão concluída" :
+            foco.Rodando ? "Sessão em andamento" : "Pronto para começar";
+        BotaoTemporizador.Content = foco.Rodando ? "Pausar" :
+            foco.Restante == TimeSpan.Zero ? "Concluído" : "Iniciar";
+        BotaoTemporizador.IsEnabled = foco.Restante > TimeSpan.Zero;
+    }
+
+    private void AtualizarRelogio()
+    {
+        var agora = DateTime.UtcNow;
+        var estavaRodando = foco.Rodando;
+        foco.Avancar(agora - ultimoTick);
+        ultimoTick = agora;
+        if (estavaRodando && foco.Restante == TimeSpan.Zero)
+            iconeBandeja?.ShowBalloonTip(3500, "Prism Island", "Sua sessão de foco terminou.", Forms.ToolTipIcon.Info);
+        StatusCompacto.Text = DateTime.Now.ToString("HH:mm") +
+            (foco.Rodando ? "  •  Foco ativo" : "  •  Ander Flow");
+        AtualizarCronometro();
+        if (PainelSistema.Visibility == Visibility.Visible) AtualizarEstadoSistema();
+    }
+
+    private void AtualizarEstadoSistema()
+    {
+        var tela = Forms.Screen.PrimaryScreen;
+        TextoMonitor.Text = tela is null ? "Monitor não disponível" :
+            $"Tela principal: {tela.Bounds.Width} × {tela.Bounds.Height}";
+        using var processo = Process.GetCurrentProcess();
+        TextoMemoria.Text = $"Memória deste aplicativo: {processo.WorkingSet64 / 1024d / 1024d:N1} MB";
+        var ativo = TimeSpan.FromMilliseconds(Environment.TickCount64);
+        TextoUptime.Text = $"Windows ligado há {(int)ativo.TotalHours}h {ativo.Minutes}min";
+    }
+
+    private static System.Windows.Media.Brush Cor(string valor) => (System.Windows.Media.Brush)new System.Windows.Media.BrushConverter().ConvertFromString(valor)!;
+
+    private void AplicarTema()
+    {
+        bool claro = tema == "claro";
+        bool mono = tema == "mono";
+        BordaPrincipal.Background = Cor(claro ? "#F0F0EB" : "#0A0A0F");
+        BordaPrincipal.BorderBrush = Cor(claro ? "#B9B2A8" : mono ? "#6B6770" : "#6B4438");
+        var texto = Cor(claro ? "#19191C" : "#F5F5F0");
+        TituloPrincipal.Foreground = texto;
+        TextoTituloPainel.Foreground = texto;
+        TextoCronometro.Foreground = texto;
+        TextoMonitor.Foreground = texto;
+        IndicadorAbertura.Foreground = Cor(mono ? "#BBB7AE" : "#E8622A");
+        PainelFoco.Background = PainelSistema.Background = PainelAjustes.Background =
+            Cor(claro ? "#E2DFD9" : "#18171D");
+        BotaoTema.Content = "Tema: " + (claro ? "Fosco Claro" : mono ? "Monocromático" : tema == "preto" ? "Preto Clássico" : "Prism Flow");
+    }
+
+    private void AoAlternarTema(object sender, RoutedEventArgs e)
+    {
+        tema = tema switch { "prism" => "claro", "claro" => "mono", "mono" => "preto", _ => "prism" };
+        AplicarTema();
+        SalvarConfiguracoes();
+    }
+
+    private void AoAlternarAutoInicio(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var caminho = Environment.ProcessPath ?? string.Empty;
+            if (!caminho.EndsWith("AnderFlowPrismIsland.exe", StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException("Instale o executável antes de habilitar o início automático.");
+            using var chave = Registry.CurrentUser.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run");
+            if (chave is null) throw new InvalidOperationException("Registro indisponível.");
+            if (iniciarComWindows) chave.DeleteValue("AnderFlowPrismIsland", false);
+            else chave.SetValue("AnderFlowPrismIsland", "\"" + caminho + "\"");
+            iniciarComWindows = !iniciarComWindows;
+            BotaoAutoInicio.Content = "Iniciar com Windows: " + (iniciarComWindows ? "ligado" : "desligado");
+            SalvarConfiguracoes();
+        }
+        catch (Exception erro)
+        {
+            TextoRodape.Text = "Não foi possível alterar: " + erro.Message;
+        }
+    }
+
+    private void AoAbrirConfiguracoesWindows(object sender, RoutedEventArgs e)
+    {
+        try { Process.Start(new ProcessStartInfo("ms-settings:display") { UseShellExecute = true }); }
+        catch (Exception erro) { TextoRodape.Text = erro.Message; }
+    }
+
+    private void SalvarConfiguracoes()
+    {
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(caminhoConfiguracoes)!);
+            File.WriteAllText(caminhoConfiguracoes,
+                JsonSerializer.Serialize(new Preferencias(tema, iniciarComWindows)));
+        }
+        catch (Exception erro) { TextoRodape.Text = "Falha ao salvar: " + erro.Message; }
+    }
+
+    private void CarregarConfiguracoes()
+    {
+        try
+        {
+            if (File.Exists(caminhoConfiguracoes))
+            {
+                var preferencias = JsonSerializer.Deserialize<Preferencias>(File.ReadAllText(caminhoConfiguracoes));
+                if (preferencias is not null)
+                {
+                    tema = new[] { "prism", "preto", "claro", "mono" }.Contains(preferencias.Tema)
+                        ? preferencias.Tema : "prism";
+                }
+            }
+            using var chave = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run");
+            iniciarComWindows = chave?.GetValue("AnderFlowPrismIsland") is string;
+            BotaoAutoInicio.Content = "Iniciar com Windows: " + (iniciarComWindows ? "ligado" : "desligado");
+            TextoRodape.Text = "Ander Flow • v0.1.0-dev" + (atalhoDisponivel ? "" : " • Atalho em uso");
+        }
+        catch { tema = "prism"; iniciarComWindows = false; }
+    }
+
+    private record Preferencias(string Tema, bool IniciarComWindows);
+
+    private void CriarBandeja()
+    {
+        var menu = new Forms.ContextMenuStrip();
+        menu.Items.Add("Mostrar Prism Island", null, (_, _) =>
+            Dispatcher.Invoke(() => { Show(); Expandir(); Activate(); }));
+        menu.Items.Add("Recolher", null, (_, _) => Dispatcher.Invoke(Recolher));
+        menu.Items.Add(new Forms.ToolStripSeparator());
+        menu.Items.Add("Sair", null, (_, _) => Dispatcher.Invoke(() =>
+        {
+            encerrando = true;
+            Close();
+        }));
+        iconeBandeja = new Forms.NotifyIcon
+        {
+            Text = "Ander Flow Prism Island",
+            Icon = DesenharIcone(),
+            Visible = true,
+            ContextMenuStrip = menu
+        };
+        iconeBandeja.DoubleClick += (_, _) => Dispatcher.Invoke(() => { Show(); Expandir(); Activate(); });
+    }
+
+    private static Drawing.Icon DesenharIcone()
+    {
+        using var bitmap = new Drawing.Bitmap(32, 32);
+        using var grafico = Drawing.Graphics.FromImage(bitmap);
+        grafico.SmoothingMode = Drawing.Drawing2D.SmoothingMode.AntiAlias;
+        using var fundo = new Drawing.SolidBrush(Drawing.Color.FromArgb(10, 10, 15));
+        using var laranja = new Drawing.SolidBrush(Drawing.Color.FromArgb(232, 98, 42));
+        grafico.FillEllipse(fundo, 0, 0, 31, 31);
+        grafico.FillEllipse(laranja, 9, 9, 14, 14);
+        var handle = bitmap.GetHicon();
+        using var temporario = Drawing.Icon.FromHandle(handle);
+        return (Drawing.Icon)temporario.Clone();
+    }
+
+    private void AoFechar(object? sender, System.ComponentModel.CancelEventArgs e)
+    {
+        if (encerrando == false) encerrando = true;
+        recolhimento.Stop();
+        relogio.Stop();
+        if (atalhoDisponivel && origemMensagens is not null)
+            UnregisterHotKey(origemMensagens.Handle, HotkeyId);
+        if (origemMensagens is not null) origemMensagens.RemoveHook(ReceberMensagem);
+        if (iconeBandeja is not null)
+        {
+            iconeBandeja.Visible = false;
+            iconeBandeja.Dispose();
+        }
+    }
+}

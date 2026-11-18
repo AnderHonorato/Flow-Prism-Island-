@@ -1,0 +1,80 @@
+name: Build e instalador Windows
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  compilar:
+    name: Testar, empacotar e publicar preview
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: Clonar fonte
+        uses: actions/checkout@v4
+      - name: Instalar .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Testar regras da ilha e temporizador
+        shell: pwsh
+        run: dotnet run --project tests/Prism.Tests/Prism.Tests.csproj -c Release
+      - name: Compilar aplicativo Windows autocontido
+        shell: pwsh
+        run: >
+          dotnet publish apps/desktop/AnderFlowPrismIsland.csproj
+          -c Release -r win-x64 --self-contained true
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:DebugType=None -p:DebugSymbols=false
+          -o dist/portable
+      - name: Instalar ferramenta de empacotamento Inno Setup
+        shell: pwsh
+        run: choco install innosetup --yes --no-progress
+      - name: Criar instalador em português
+        shell: pwsh
+        run: |
+          $caminhos = @(
+            "C:\Program Files (x86)\Inno Setup 6\ISCC.exe",
+            "C:\Program Files\Inno Setup 6\ISCC.exe"
+          )
+          $compilador = $caminhos | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (-not $compilador) { throw "Compilador Inno Setup não encontrado" }
+          & $compilador "installer\prism-island.iss"
+          if ($LASTEXITCODE -ne 0) { throw "Falha ao compilar instalador" }
+      - name: Empacotar versão portátil
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "dist\portable\*" -DestinationPath "dist\Ander-Flow-Prism-Island-v0.1.0-win-x64-portable.zip" -CompressionLevel Optimal -Force
+          Get-FileHash "dist\Ander-Flow-Prism-Island-v0.1.0-win-x64-setup.exe" -Algorithm SHA256 | Select-Object Hash,Path
+      - name: Salvar artefatos da build
+        uses: actions/upload-artifact@v4
+        with:
+          name: flow-prism-island-v0.1.0-windows
+          path: |
+            dist/Ander-Flow-Prism-Island-v0.1.0-win-x64-setup.exe
+            dist/Ander-Flow-Prism-Island-v0.1.0-win-x64-portable.zip
+          if-no-files-found: error
+      - name: Publicar pré-lançamento com instalador
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.1.0-preview.1
+          name: "Prism Island v0.1.0 — Prévia Windows"
+          prerelease: true
+          draft: false
+          generate_release_notes: false
+          overwrite_files: true
+          body: |
+            ## Prévia de desenvolvimento
+            Instalador Windows x64 com runtime .NET incluído e desinstalador.
+            Testes automatizados: temporizador e estados da ilha.
+            **Ainda não é versão estável.** Layout/atalhos/monitores precisam de QA visual adicional.
+            Código-fonte e notas no README.
+          files: |
+            dist/Ander-Flow-Prism-Island-v0.1.0-win-x64-setup.exe
+            dist/Ander-Flow-Prism-Island-v0.1.0-win-x64-portable.zip
+          fail_on_unmatched_files: true
