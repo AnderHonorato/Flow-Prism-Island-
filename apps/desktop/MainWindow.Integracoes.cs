@@ -20,6 +20,8 @@ public partial class MainWindow
 {
     private readonly ServicoMidiaWindows midiaWindows = new();
     private readonly VolumeSistema volumeWindows = new();
+    private CapturaAudioReativo? capturaReativa;
+    private bool audioReativoAtivo;
     private readonly DispatcherTimer atualizacaoMidia = new() { Interval = TimeSpan.FromSeconds(3) };
     private readonly List<string> alertasLocais = new();
     private MidiaVisivel midiaAtual = MidiaVisivel.Vazia();
@@ -42,6 +44,9 @@ public partial class MainWindow
     private void PararIntegracoes()
     {
         atualizacaoMidia.Stop();
+        capturaReativa?.Dispose();
+        capturaReativa = null;
+        audioReativoAtivo = false;
         if (janelaDock is not null) { janelaDock.Close(); janelaDock = null; }
     }
 
@@ -80,7 +85,7 @@ public partial class MainWindow
                 : 0;
             TextoPosicao.Text = duracao > 0 ? FormatarTempo(midiaAtual.Posicao) : "--:--";
             TextoDuracao.Text = duracao > 0 ? FormatarTempo(midiaAtual.Duracao) : "--:--";
-            if (anterior.Tocando != midiaAtual.Tocando) AnimarBarras(midiaAtual.Tocando);
+            if (!audioReativoAtivo && anterior.Tocando != midiaAtual.Tocando) AnimarBarras(midiaAtual.Tocando);
             AtualizarStatusCompacto();
             AtualizarVolume();
         }
@@ -166,6 +171,50 @@ public partial class MainWindow
         var mudo = volumeWindows.EstaMudo();
         if (mudo.HasValue) volumeWindows.DefinirMudo(!mudo.Value);
         AtualizarVolume();
+    }
+
+    private void AoAlternarAudioReativo(object sender, RoutedEventArgs e)
+    {
+        if (audioReativoAtivo)
+        {
+            capturaReativa?.Dispose();
+            capturaReativa = null;
+            audioReativoAtivo = false;
+            BotaoAudioReativo.Content = "Ativar animação que reage ao áudio real";
+            TextoRetornoMidia.Text = "Captura de áudio interrompida.";
+            AnimarBarras(midiaAtual.Tocando);
+            return;
+        }
+
+        try
+        {
+            var nova = new CapturaAudioReativo();
+            nova.IntensidadeAtualizada += intensidade =>
+            {
+                if (Dispatcher.HasShutdownStarted) return;
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    if (!audioReativoAtivo || !IsLoaded) return;
+                    var altura = 4 + intensidade * 16;
+                    BarraMusica1.Height = altura * 0.7 + 2;
+                    BarraMusica2.Height = altura;
+                    BarraMusica3.Height = altura * 0.85;
+                }), DispatcherPriority.Render);
+            };
+            nova.Iniciar();
+            capturaReativa = nova;
+            audioReativoAtivo = true;
+            AnimarBarras(false);
+            BotaoAudioReativo.Content = "Desativar reação ao áudio";
+            TextoRetornoMidia.Text = "Áudio capturado apenas localmente, sem gravação ou envio.";
+        }
+        catch (Exception erro)
+        {
+            capturaReativa?.Dispose();
+            capturaReativa = null;
+            audioReativoAtivo = false;
+            TextoRetornoMidia.Text = "Captura indisponível: " + erro.GetType().Name;
+        }
     }
 
     private void AoSelecionarMidia(object sender, RoutedEventArgs e)

@@ -14,7 +14,7 @@
 - Sem release estável, testes de mídia real nem aprovação de release gate.
 
 ## Implementação 0.2.0 em validação
-- Mídia via Windows GSMTC, comandos no player, volume do sistema, animação vinculada ao estado de reprodução.
+- Mídia via Windows GSMTC, comandos no player, volume do sistema, animação vinculada ao estado de reprodução e modo de captura de amplitude WASAPI opcional, apenas após clique.
 - Dock Flow com launchers e troca de janelas; wallpaper opcional reversível.
 - Alertas próprios e pedido de permissão ao listener Windows, sem acesso oculto.
 - Ainda requer compilação CI e teste visual/manual; NÃO marcar recursos como concluidos.

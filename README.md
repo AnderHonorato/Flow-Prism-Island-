@@ -16,7 +16,7 @@ Ilha dinâmica nativa e gratuita para Windows 11, com foco em rapidez e personal
 ## Atualização v0.2.0-dev
 - Sessões de mídia reais pelo Windows GSMTC (Spotify, navegadores e players compatíveis): título, artista, tempo, anterior, reproduzir/pausar e próxima conforme recursos expostos.
 - Volume e silenciar da saída principal do Windows com CoreAudio via NAudio.
-- Barras animadas somente enquanto a mídia estiver tocando. **Ainda não reagem ao espectro de áudio**.
+- Barras animadas enquanto a música toca, com **modo opcional de reação à intensidade do áudio real (WASAPI loopback)**. Não coleta nem transmite áudio; captura apenas ao clicar no botão.
 - Aba Alertas com histórico local de eventos do próprio app; solicitação explícita ao Windows para ler notificações externas (acesso requer identidade MSIX apropriada, não garantido para .exe).
 - Dock Flow opcional e reversível, com abrir arquivos, navegador, configurações e alternar janelas abertas.
 - Seleção/restauração de wallpaper com backup anterior; atalho para configurações nativas da barra de tarefas.

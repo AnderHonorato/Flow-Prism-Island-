@@ -117,6 +117,9 @@
                 VerticalAlignment="Center" TickFrequency="1" ValueChanged="AoAlterarVolume"/>
         <TextBlock x:Name="TextoVolume" Text="--%" Grid.Column="2" Foreground="#F5F5F0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
        </Grid>
+       <Button x:Name="BotaoAudioReativo" Content="Ativar animação que reage ao áudio real"
+               Style="{StaticResource Acao}" Click="AoAlternarAudioReativo"
+               ToolTip="Captura local do áudio de saída. Não salva nem transmite."/>
        <TextBlock x:Name="TextoRetornoMidia" FontSize="10" Foreground="#A6A0A1" Margin="3,9,0,0"
                   Text="Aguardando uma sessão de mídia do Windows"/>
       </StackPanel>

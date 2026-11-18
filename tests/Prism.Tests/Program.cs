@@ -51,4 +51,13 @@ Testar("Volume sempre limitado de 0 a 100", () => {
     Exigir(VolumeSistema.LimitarPorcentagem(400) == 100, "Acima de 100");
     Exigir(VolumeSistema.LimitarPorcentagem(50) == 50, "Meio");
 });
+Testar("A reação a áudio não inventa som quando a entrada está vazia", () => {
+    Exigir(IntensidadeAudio.Calcular(Array.Empty<float>()) == 0, "Entrada vazia");
+    Exigir(IntensidadeAudio.Calcular(new float[] { 0, 0, 0 }) == 0, "Silêncio");
+});
+Testar("A reação a áudio retorna intensidade normalizada", () => {
+    var intensidade = IntensidadeAudio.Calcular(new float[] { 0.5f, -0.5f });
+    Exigir(intensidade > 0.99 && intensidade <= 1, "Saturação limitada");
+    Exigir(IntensidadeAudio.Calcular(new float[] { 0.01f, 0.01f }) > 0, "Áudio baixo");
+});
 Console.WriteLine($"VALIDADOS: {verificados} testes de lógica.");
