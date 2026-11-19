@@ -36,7 +36,23 @@ public partial class MainWindow : Window
     private string tema = "prism";
     private bool iniciarComWindows;
     private bool encerrando;
+    private double larguraRecolhida = 232;
+    private bool autoOcultar = true;
+    private int tempoAutoOcultarMs = TempoOcultacao.PadraoMs;
+    private bool oculta;
+    private bool ocultarEmTelaCheia = true;
+    private bool telaCheia;
+    private int ciclosVigia;
+    private Forms.Screen? telaAtual;
+    private DateTime ultimaInteracao = DateTime.UtcNow;
+    private readonly DispatcherTimer vigia = new() { Interval = TimeSpan.FromMilliseconds(120) };
 
+    [StructLayout(LayoutKind.Sequential)]
+    private struct PontoNativo { public int X; public int Y; }
+    [DllImport("shell32.dll")]
+    private static extern int SHQueryUserNotificationState(out int estado);
+    [DllImport("user32.dll")]
+    private static extern bool GetCursorPos(out PontoNativo ponto);
     [DllImport("user32.dll", SetLastError = true)]
     private static extern bool RegisterHotKey(IntPtr janela, int id, uint modificadores, uint tecla);
     [DllImport("user32.dll", SetLastError = true)]
@@ -46,6 +62,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         relogio.Tick += (_, _) => AtualizarRelogio();
+        vigia.Tick += (_, _) => VigiarBorda();
         recolhimento.Tick += (_, _) =>
         {
             recolhimento.Stop();
@@ -70,6 +87,7 @@ public partial class MainWindow : Window
             else Expandir();
             tratado = true;
         }
+        if (mensagem == WmClipboardUpdate) AoMudarAreaTransferencia();
         return IntPtr.Zero;
     }
 
@@ -83,12 +101,14 @@ public partial class MainWindow : Window
         CriarBandeja();
         Posicionar();
         relogio.Start();
+        ultimaInteracao = DateTime.UtcNow;
+        vigia.Start();
         IniciarIntegracoes();
     }
 
     private void Posicionar()
     {
-        var area = SystemParameters.WorkArea;
+        var area = AreaTrabalho();
         Left = area.Left + (area.Width - Width) / 2;
         Top = area.Top + 8;
     }
@@ -110,9 +130,9 @@ public partial class MainWindow : Window
 
     private void AjustarJanela(bool expandida)
     {
-        double largura = expandida ? 528 : 232;
-        double altura = expandida ? 395 : 48;
-        var area = SystemParameters.WorkArea;
+        double largura = expandida ? 528 : larguraRecolhida;
+        double altura = expandida ? 500 : 48;
+        var area = AreaTrabalho();
         if (expandida) PainelAberto.Visibility = Visibility.Visible;
         IndicadorAbertura.Text = expandida ? "⌃" : "⌄";
         Animar(WidthProperty, largura);
@@ -124,6 +144,7 @@ public partial class MainWindow : Window
 
     private void Expandir()
     {
+        Revelar();
         recolhimento.Stop();
         ilha.Expandir();
         AjustarJanela(true);
@@ -131,6 +152,7 @@ public partial class MainWindow : Window
 
     private void Recolher()
     {
+        ultimaInteracao = DateTime.UtcNow;
         recolhimento.Stop();
         ilha.Recolher();
         BotaoFixar.Content = "Fixar";
@@ -151,6 +173,7 @@ public partial class MainWindow : Window
 
     private void AoSair(object sender, System.Windows.Input.MouseEventArgs e)
     {
+        ultimaInteracao = DateTime.UtcNow;
         if (ilha.Estado != EstadoIlha.Fixada)
         {
             recolhimento.Stop();
@@ -165,6 +188,110 @@ public partial class MainWindow : Window
             Recolher();
             e.Handled = true;
         }
+    }
+
+    // ===== Ocultar automaticamente, tela cheia e vários monitores =====
+    // Área útil (em unidades do WPF) do monitor em que a ilha está. Sem monitor escolhido, usa o principal.
+    private Rect AreaTrabalho(Forms.Screen? tela = null)
+    {
+        tela ??= telaAtual ?? Forms.Screen.PrimaryScreen;
+        if (tela is null) return SystemParameters.WorkArea;
+        var dpi = VisualTreeHelper.GetDpi(this);
+        var area = tela.WorkingArea;
+        return new Rect(area.Left / dpi.DpiScaleX, area.Top / dpi.DpiScaleY,
+                        area.Width / dpi.DpiScaleX, area.Height / dpi.DpiScaleY);
+    }
+
+    // Estados do Windows para "há um app em tela cheia": ocupado (2), Direct3D em tela cheia (3), apresentação (4).
+    private static bool EmTelaCheia() =>
+        SHQueryUserNotificationState(out int estado) == 0 && (estado == 2 || estado == 3 || estado == 4);
+
+    private bool CursorNaBorda(out Forms.Screen? tela)
+    {
+        tela = null;
+        if (!GetCursorPos(out var ponto)) return false;
+        tela = Forms.Screen.FromPoint(new Drawing.Point(ponto.X, ponto.Y));
+        var dpi = VisualTreeHelper.GetDpi(this);
+        double x = ponto.X / dpi.DpiScaleX, y = ponto.Y / dpi.DpiScaleY;
+        var area = AreaTrabalho(tela);
+        double meio = area.Left + area.Width / 2;
+        double meiaLargura = Math.Max(Width, larguraRecolhida) / 2 + 80;
+        return y >= area.Top - 1 && y <= area.Top + 3 && Math.Abs(x - meio) <= meiaLargura;
+    }
+
+    private void VigiarBorda()
+    {
+        // Consulta o Windows cerca de uma vez por segundo.
+        if (++ciclosVigia % 8 == 0) telaCheia = ocultarEmTelaCheia && EmTelaCheia();
+        if (telaCheia && !ilha.EstaExpandida)
+        {
+            if (!oculta) Ocultar();
+            return;
+        }
+        if (!autoOcultar) { if (oculta) Revelar(); return; }
+        bool naBorda = CursorNaBorda(out var tela);
+        if (oculta)
+        {
+            if (!naBorda) return;
+            string? atual = (telaAtual ?? Forms.Screen.PrimaryScreen)?.DeviceName;
+            if (tela is not null && tela.DeviceName != atual)
+            {
+                telaAtual = tela;       // a ilha muda para o monitor em que o mouse encostou
+                AjustarJanela(false);
+            }
+            Revelar();
+            return;
+        }
+        if (ilha.EstaExpandida || IsMouseOver || naBorda) { ultimaInteracao = DateTime.UtcNow; return; }
+        if (DateTime.UtcNow - ultimaInteracao > TimeSpan.FromMilliseconds(tempoAutoOcultarMs)) Ocultar();
+    }
+
+    private void Ocultar()
+    {
+        oculta = true;
+        Animar(TopProperty, AreaTrabalho().Top - ActualHeight - 6, 260);
+    }
+
+    private void Revelar()
+    {
+        ultimaInteracao = DateTime.UtcNow;
+        if (!oculta) return;
+        oculta = false;
+        Animar(TopProperty, AreaTrabalho().Top + 8, 220);
+    }
+
+    private void AoAlternarTelaCheia(object sender, RoutedEventArgs e)
+    {
+        ocultarEmTelaCheia = !ocultarEmTelaCheia;
+        if (!ocultarEmTelaCheia) { telaCheia = false; if (!autoOcultar) Revelar(); }
+        AtualizarTextoTelaCheia();
+        SalvarConfiguracoes();
+    }
+
+    private void AtualizarTextoTelaCheia() =>
+        BotaoTelaCheia.Content = "Ocultar em tela cheia: " + (ocultarEmTelaCheia ? "ligado" : "desligado");
+
+    private void AoAlternarAutoOcultar(object sender, RoutedEventArgs e)
+    {
+        autoOcultar = !autoOcultar;
+        if (!autoOcultar) Revelar();
+        AtualizarTextoAutoOcultar();
+        SalvarConfiguracoes();
+    }
+
+    private void AtualizarTextoAutoOcultar()
+    {
+        BotaoAutoOcultar.Content = "Ocultar automaticamente: " + (autoOcultar ? "ligado" : "desligado");
+        BotaoTempoOcultacao.IsEnabled = autoOcultar;
+        BotaoTempoOcultacao.Content = $"Tempo para ocultar: {tempoAutoOcultarMs / 1000.0:0.#} s";
+    }
+
+    private void AoAlternarTempoOcultacao(object sender, RoutedEventArgs e)
+    {
+        tempoAutoOcultarMs = TempoOcultacao.Proximo(tempoAutoOcultarMs);
+        ultimaInteracao = DateTime.UtcNow;
+        AtualizarTextoAutoOcultar();
+        SalvarConfiguracoes();
     }
 
     private void AoFixar(object sender, RoutedEventArgs e)
@@ -192,6 +319,9 @@ public partial class MainWindow : Window
         PainelDesktop.Visibility = selecionada == "desktop" ? Visibility.Visible : Visibility.Collapsed;
         PainelSistema.Visibility = selecionada == "sistema" ? Visibility.Visible : Visibility.Collapsed;
         PainelAjustes.Visibility = selecionada == "ajustes" ? Visibility.Visible : Visibility.Collapsed;
+        PainelCopias.Visibility = selecionada == "copias" ? Visibility.Visible : Visibility.Collapsed;
+        AbaCopias.Background = Cor(selecionada == "copias" ? "#E8622A" : "#25242A");
+        if (selecionada == "copias") AtualizarListaCopias();
         AbaMidia.Background = Cor(selecionada == "midia" ? "#E8622A" : "#25242A");
         AbaFoco.Background = Cor(selecionada == "foco" ? "#E8622A" : "#25242A");
         AbaAlertas.Background = Cor(selecionada == "alertas" ? "#E8622A" : "#25242A");
@@ -205,6 +335,7 @@ public partial class MainWindow : Window
             "alertas" => "O que merece sua atenção.",
             "desktop" => "Seu Windows com sua identidade.",
             "sistema" => "Seu Windows em um olhar.",
+            "copias" => "O que você copiou, à mão.",
             _ => "Sua ilha, suas regras."
         };
         TextoSubtitulo.Text = selecionada switch
@@ -220,6 +351,7 @@ public partial class MainWindow : Window
     private void AoSelecionarFoco(object sender, RoutedEventArgs e) => AtualizarAbas("foco");
     private void AoSelecionarSistema(object sender, RoutedEventArgs e) => AtualizarAbas("sistema");
     private void AoSelecionarAjustes(object sender, RoutedEventArgs e) => AtualizarAbas("ajustes");
+    private void AoSelecionarCopias(object sender, RoutedEventArgs e) => AtualizarAbas("copias");
 
     private void AoAlternarTemporizador(object sender, RoutedEventArgs e)
     {
@@ -330,7 +462,7 @@ public partial class MainWindow : Window
         {
             Directory.CreateDirectory(Path.GetDirectoryName(caminhoConfiguracoes)!);
             File.WriteAllText(caminhoConfiguracoes,
-                JsonSerializer.Serialize(new Preferencias(tema, iniciarComWindows, dockAtivo, papelAnterior)));
+                JsonSerializer.Serialize(new Preferencias(tema, iniciarComWindows, dockAtivo, papelAnterior, autoOcultar, ocultarEmTelaCheia, tempoAutoOcultarMs)));
         }
         catch (Exception erro) { TextoRodape.Text = "Falha ao salvar: " + erro.Message; }
     }
@@ -348,17 +480,22 @@ public partial class MainWindow : Window
                         ? preferencias.Tema : "prism";
                     dockAtivo = preferencias.DockAtivo;
                     papelAnterior = preferencias.PapelAnterior;
+                    autoOcultar = preferencias.AutoOcultar;
+                    ocultarEmTelaCheia = preferencias.OcultarEmTelaCheia;
+                    tempoAutoOcultarMs = TempoOcultacao.Normalizar(preferencias.TempoOcultacaoMs);
                 }
             }
             using var chave = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run");
             iniciarComWindows = chave?.GetValue("AnderFlowPrismIsland") is string;
+            AtualizarTextoAutoOcultar();
+            AtualizarTextoTelaCheia();
             BotaoAutoInicio.Content = "Iniciar com Windows: " + (iniciarComWindows ? "ligado" : "desligado");
-            TextoRodape.Text = "Ander Flow • v0.2.0-dev" + (atalhoDisponivel ? "" : " • Atalho em uso");
+            TextoRodape.Text = "Ander Flow • v0.4.0-dev" + (atalhoDisponivel ? "" : " • Atalho em uso");
         }
         catch { tema = "prism"; iniciarComWindows = false; }
     }
 
-    private record Preferencias(string Tema, bool IniciarComWindows, bool DockAtivo = false, string? PapelAnterior = null);
+    private record Preferencias(string Tema, bool IniciarComWindows, bool DockAtivo = false, string? PapelAnterior = null, bool AutoOcultar = true, bool OcultarEmTelaCheia = true, int TempoOcultacaoMs = TempoOcultacao.PadraoMs);
 
     private void CriarBandeja()
     {
@@ -401,7 +538,9 @@ public partial class MainWindow : Window
         if (encerrando == false) encerrando = true;
         recolhimento.Stop();
         relogio.Stop();
+        vigia.Stop();
         PararIntegracoes();
+        PararCopias();
         if (atalhoDisponivel && origemMensagens is not null)
             UnregisterHotKey(origemMensagens.Handle, HotkeyId);
         if (origemMensagens is not null) origemMensagens.RemoveHook(ReceberMensagem);

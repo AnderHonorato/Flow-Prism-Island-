@@ -2,7 +2,7 @@
 
 Ilha dinâmica nativa e gratuita para Windows 11, com foco em rapidez e personalização 2D, desenvolvida pela Ander Flow.
 
-**Situação:** v0.2.0-dev (fase inicial; não é release estável).
+**Situação:** v0.3.0-dev (fase inicial; não é release estável).
 
 ## O que já existe no código
 - Janela WPF real, transparente, sem moldura e sempre visível; cápsula compacta que expande no mouse/clique.
@@ -49,3 +49,19 @@ Código original independente da Ander Flow, sem incorporar código nem assets d
 
 ## Rastreamento
 O escopo completo (418 itens) consta no superprompt do produto e no backlog estruturado em `docs/backlog/TAREFAS.json`. Funcionalidade não testada não é marcada como concluída.
+
+## Prism v0.3.0 — interface e comportamento (prévia)
+- Visual Prism com ícones vetoriais, controles de reprodução compactos, foco acessível e painel expandido de 500 px.
+- Atividade compacta: indicador de música, temporizador de foco e retorno à largura normal quando a atividade termina.
+- Ocultação automática opcional: a ilha sai do topo e retorna ao alcançar a borda superior do monitor.
+- Novo ajuste do tempo de ocultação: **1,5 s, 2,5 s ou 5 s**, salvo em configurações locais.
+- Ocultação em tela cheia para reduzir interferência em jogos e vídeos; suporte básico a monitores múltiplos.
+- Aba **Cópias**: histórico de até 10 textos, **desligado por padrão**, guardado apenas em memória e limpo ao desligar/fechar. Respeita a marca de exclusão de monitoramento de clipboard quando fornecida pela origem. Não garante reconhecimento de todos os dados confidenciais.
+
+**Validação atual:** projeto compilado no Windows com .NET 10 (sem erros/avisos) e 11 testes de lógica aprovados. **Não substituir por isso um teste visual completo de todos os monitores, players e escalas de DPI**. Instalador e pacote portátil são construídos pelo workflow Windows do GitHub.
+
+### Fontes e integração
+As melhorias da interface partiram dos arquivos PATCH/ZIP fornecidos pelo usuário e foram integradas numa branch isolada. As modificações locais não commitadas na pasta original foram preservadas. Todas as futuras alterações devem partir deste código versionado e passar novamente pela CI.
+
+## v0.4.0-dev — mod real do Windows 11
+A aba Desktop agora possui controles nativos para o Windows **real**: tema claro/escuro, alinhamento dos ícones da barra de tarefas e contorno das janelas. O aplicativo salva o estado original por usuário antes de qualquer alteração, pede confirmação e oferece restauração. Para estilo avançado da barra original, inclui um preset para **Windows 11 Taskbar Styler (Windhawk)** com seletores do Explorer; sua instalação e aplicação são opcionais e manuais. Consulte [docs/MOD_REAL_WINDOWS.md](docs/MOD_REAL_WINDOWS.md). Nenhuma modificação é aplicada automaticamente durante build, teste ou inicialização.

@@ -1,0 +1,233 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+ <!-- ===== Tokens de design Ander Flow ===== -->
+ <SolidColorBrush x:Key="PrismLaranja" Color="#E8622A"/>
+ <SolidColorBrush x:Key="PrismPreto" Color="#0A0A0F"/>
+ <SolidColorBrush x:Key="PrismGrafite" Color="#18171D"/>
+ <SolidColorBrush x:Key="PrismBotao" Color="#25242A"/>
+ <SolidColorBrush x:Key="PrismTexto" Color="#F5F5F0"/>
+ <SolidColorBrush x:Key="PrismTextoSuave" Color="#A59FA3"/>
+ <SolidColorBrush x:Key="PrismDivisor" Color="#383239"/>
+
+ <!-- ===== Ícones vetoriais (grade 24x24) ===== -->
+ <Geometry x:Key="IcPlay">M8,5 L19,12 L8,19 Z</Geometry>
+ <Geometry x:Key="IcPausa">M6,5 H10 V19 H6 Z M14,5 H18 V19 H14 Z</Geometry>
+ <Geometry x:Key="IcProxima">M6,5 L15,12 L6,19 Z M16,5 H19 V19 H16 Z</Geometry>
+ <Geometry x:Key="IcAnterior">M18,5 L9,12 L18,19 Z M8,5 H5 V19 H8 Z</Geometry>
+ <Geometry x:Key="IcVolume">M4,9 H8 L13,5 V19 L8,15 H4 Z M16.5,9 A4,4 0 0 1 16.5,15 M19,6.5 A7.5,7.5 0 0 1 19,17.5</Geometry>
+ <Geometry x:Key="IcMudo">M4,9 H8 L13,5 V19 L8,15 H4 Z M17,9 L22,15 M22,9 L17,15</Geometry>
+ <Geometry x:Key="IcMidia">M9,18 V6 L19,4 V16 M9,18 A3,3 0 1 1 3,18 A3,3 0 1 1 9,18 M19,16 A3,3 0 1 1 13,16 A3,3 0 1 1 19,16</Geometry>
+ <Geometry x:Key="IcFoco">M12,21 A8,8 0 1 1 12,5 A8,8 0 1 1 12,21 M12,9 V13 L14.5,14.5 M9.5,2.5 H14.5</Geometry>
+ <Geometry x:Key="IcAlertas">M6,16 V11 A6,6 0 0 1 18,11 V16 L20,18 H4 Z M10,21 H14</Geometry>
+ <Geometry x:Key="IcDesktop">M3,5 H21 V16 H3 Z M9,20 H15 M12,16 V20</Geometry>
+ <Geometry x:Key="IcSistema">M5,5 H19 V19 H5 Z M9,9 H15 V15 H9 Z M9,2 V5 M15,2 V5 M9,19 V22 M15,19 V22 M2,9 H5 M2,15 H5 M19,9 H22 M19,15 H22</Geometry>
+ <Geometry x:Key="IcCopias">M9,4 H15 V7 H9 Z M7,5.5 H5 V21 H19 V5.5 H17 M8.5,12 H15.5 M8.5,16 H13</Geometry>
+ <Geometry x:Key="IcAjustes">M4,7 H20 M4,17 H20 M9,4 V10 M15,14 V20</Geometry>
+
+ <!-- ===== Botão de texto (mantém a chave "Acao" usada pelo código) ===== -->
+ <Style x:Key="Acao" TargetType="Button">
+  <Setter Property="Background" Value="{StaticResource PrismBotao}"/>
+  <Setter Property="Foreground" Value="{StaticResource PrismTexto}"/>
+  <Setter Property="FontFamily" Value="Segoe UI"/>
+  <Setter Property="FontSize" Value="12"/>
+  <Setter Property="FontWeight" Value="SemiBold"/>
+  <Setter Property="Padding" Value="10,8"/>
+  <Setter Property="Margin" Value="3"/>
+  <Setter Property="Cursor" Value="Hand"/>
+  <Setter Property="BorderThickness" Value="0"/>
+  <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+  <Setter Property="Template">
+   <Setter.Value>
+    <ControlTemplate TargetType="Button">
+     <Border x:Name="Raiz" Background="{TemplateBinding Background}" CornerRadius="11"
+             Padding="{TemplateBinding Padding}" BorderBrush="Transparent" BorderThickness="1">
+      <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+     </Border>
+     <ControlTemplate.Triggers>
+      <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Raiz" Property="Opacity" Value="0.85"/></Trigger>
+      <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Raiz" Property="BorderBrush" Value="{StaticResource PrismLaranja}"/></Trigger>
+      <Trigger Property="IsEnabled" Value="False"><Setter TargetName="Raiz" Property="Opacity" Value="0.4"/></Trigger>
+     </ControlTemplate.Triggers>
+    </ControlTemplate>
+   </Setter.Value>
+  </Setter>
+ </Style>
+
+ <!-- ===== Aba com ícone (Tag = geometria; Background controlado pelo código) ===== -->
+ <Style x:Key="AbaPrism" TargetType="Button">
+  <Setter Property="Background" Value="{StaticResource PrismBotao}"/>
+  <Setter Property="Foreground" Value="{StaticResource PrismTexto}"/>
+  <Setter Property="FontFamily" Value="Segoe UI"/>
+  <Setter Property="FontSize" Value="10"/>
+  <Setter Property="FontWeight" Value="SemiBold"/>
+  <Setter Property="Margin" Value="2"/>
+  <Setter Property="Cursor" Value="Hand"/>
+  <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+  <Setter Property="Template">
+   <Setter.Value>
+    <ControlTemplate TargetType="Button">
+     <Border x:Name="Raiz" Background="{TemplateBinding Background}" CornerRadius="12" Padding="4,8"
+             BorderBrush="Transparent" BorderThickness="1">
+      <StackPanel HorizontalAlignment="Center">
+       <Path Data="{TemplateBinding Tag}" Width="16" Height="16" Stretch="Uniform"
+             Stroke="{TemplateBinding Foreground}" StrokeThickness="1.7"
+             StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+             HorizontalAlignment="Center"/>
+       <ContentPresenter HorizontalAlignment="Center" Margin="0,4,0,0"/>
+      </StackPanel>
+     </Border>
+     <ControlTemplate.Triggers>
+      <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Raiz" Property="Opacity" Value="0.85"/></Trigger>
+      <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Raiz" Property="BorderBrush" Value="{StaticResource PrismLaranja}"/></Trigger>
+     </ControlTemplate.Triggers>
+    </ControlTemplate>
+   </Setter.Value>
+  </Setter>
+ </Style>
+
+ <!-- ===== Botão redondo, ícone sólido (play/pausa/próxima/anterior) ===== -->
+ <Style x:Key="IconeSolido" TargetType="Button">
+  <Setter Property="Background" Value="{StaticResource PrismBotao}"/>
+  <Setter Property="Foreground" Value="{StaticResource PrismTexto}"/>
+  <Setter Property="Width" Value="44"/>
+  <Setter Property="Height" Value="44"/>
+  <Setter Property="Margin" Value="6,0"/>
+  <Setter Property="Cursor" Value="Hand"/>
+  <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+  <Setter Property="Tag" Value="{StaticResource IcPlay}"/>
+  <Setter Property="Template">
+   <Setter.Value>
+    <ControlTemplate TargetType="Button">
+     <Border x:Name="Raiz" Background="{TemplateBinding Background}" CornerRadius="22"
+             BorderBrush="Transparent" BorderThickness="1">
+      <Path x:Name="Icone" Data="{TemplateBinding Tag}" Width="18" Height="18" Stretch="Uniform"
+            Fill="{TemplateBinding Foreground}"/>
+     </Border>
+     <ControlTemplate.Triggers>
+      <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Raiz" Property="Opacity" Value="0.85"/></Trigger>
+      <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Raiz" Property="BorderBrush" Value="{StaticResource PrismTexto}"/></Trigger>
+      <Trigger Property="IsEnabled" Value="False"><Setter TargetName="Raiz" Property="Opacity" Value="0.35"/></Trigger>
+      <!-- O código troca o texto do botão ("Pausar"/"Reproduzir"); o ícone acompanha. -->
+      <DataTrigger Binding="{Binding Content, RelativeSource={RelativeSource Self}}" Value="Pausar">
+       <Setter TargetName="Icone" Property="Data" Value="{StaticResource IcPausa}"/>
+      </DataTrigger>
+     </ControlTemplate.Triggers>
+    </ControlTemplate>
+   </Setter.Value>
+  </Setter>
+ </Style>
+
+ <!-- ===== Botão com ícone de linha (volume/mudo) ===== -->
+ <Style x:Key="IconeLinha" TargetType="Button" BasedOn="{StaticResource IconeSolido}">
+  <Setter Property="Width" Value="36"/>
+  <Setter Property="Height" Value="36"/>
+  <Setter Property="Margin" Value="0"/>
+  <Setter Property="Tag" Value="{StaticResource IcVolume}"/>
+  <Setter Property="Template">
+   <Setter.Value>
+    <ControlTemplate TargetType="Button">
+     <Border x:Name="Raiz" Background="{TemplateBinding Background}" CornerRadius="18"
+             BorderBrush="Transparent" BorderThickness="1">
+      <Path x:Name="Icone" Data="{TemplateBinding Tag}" Width="18" Height="18" Stretch="Uniform"
+            Stroke="{TemplateBinding Foreground}" StrokeThickness="1.7"
+            StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+     </Border>
+     <ControlTemplate.Triggers>
+      <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Raiz" Property="Opacity" Value="0.85"/></Trigger>
+      <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Raiz" Property="BorderBrush" Value="{StaticResource PrismTexto}"/></Trigger>
+      <DataTrigger Binding="{Binding Content, RelativeSource={RelativeSource Self}}" Value="Mudo">
+       <Setter TargetName="Icone" Property="Data" Value="{StaticResource IcMudo}"/>
+       <Setter TargetName="Icone" Property="Stroke" Value="{StaticResource PrismLaranja}"/>
+      </DataTrigger>
+     </ControlTemplate.Triggers>
+    </ControlTemplate>
+   </Setter.Value>
+  </Setter>
+ </Style>
+
+ <!-- ===== Cartão de módulo ===== -->
+ <Style x:Key="CartaoPrism" TargetType="Border">
+  <Setter Property="Background" Value="{StaticResource PrismGrafite}"/>
+  <Setter Property="CornerRadius" Value="16"/>
+  <Setter Property="Padding" Value="14"/>
+  <Setter Property="BorderBrush" Value="#26232A"/>
+  <Setter Property="BorderThickness" Value="1"/>
+ </Style>
+
+ <!-- ===== Rótulo de seção ===== -->
+ <Style x:Key="RotuloSecao" TargetType="TextBlock">
+  <Setter Property="Foreground" Value="{StaticResource PrismLaranja}"/>
+  <Setter Property="FontWeight" Value="Bold"/>
+  <Setter Property="FontSize" Value="10"/>
+  <Setter Property="FontFamily" Value="Segoe UI"/>
+ </Style>
+
+ <!-- ===== Barra de progresso fina e arredondada ===== -->
+ <Style x:Key="ProgressoPrism" TargetType="ProgressBar">
+  <Setter Property="Height" Value="4"/>
+  <Setter Property="Background" Value="{StaticResource PrismDivisor}"/>
+  <Setter Property="Foreground" Value="{StaticResource PrismLaranja}"/>
+  <Setter Property="Template">
+   <Setter.Value>
+    <ControlTemplate TargetType="ProgressBar">
+     <Grid>
+      <Border x:Name="PART_Track" CornerRadius="2" Background="{TemplateBinding Background}"/>
+      <Border x:Name="PART_Indicator" CornerRadius="2" Background="{TemplateBinding Foreground}" HorizontalAlignment="Left"/>
+     </Grid>
+    </ControlTemplate>
+   </Setter.Value>
+  </Setter>
+ </Style>
+
+ <!-- ===== Slider (volume) ===== -->
+ <Style x:Key="TrilhaPreenchida" TargetType="RepeatButton">
+  <Setter Property="Focusable" Value="False"/>
+  <Setter Property="Template">
+   <Setter.Value>
+    <ControlTemplate TargetType="RepeatButton">
+     <Grid Background="Transparent" Height="18">
+      <Border Height="4" CornerRadius="2" Background="{StaticResource PrismLaranja}" VerticalAlignment="Center"/>
+     </Grid>
+    </ControlTemplate>
+   </Setter.Value>
+  </Setter>
+ </Style>
+ <Style x:Key="TrilhaVazia" TargetType="RepeatButton">
+  <Setter Property="Focusable" Value="False"/>
+  <Setter Property="Template">
+   <Setter.Value>
+    <ControlTemplate TargetType="RepeatButton"><Border Background="Transparent" Height="18"/></ControlTemplate>
+   </Setter.Value>
+  </Setter>
+ </Style>
+ <Style x:Key="PolegarPrism" TargetType="Thumb">
+  <Setter Property="Width" Value="14"/>
+  <Setter Property="Height" Value="14"/>
+  <Setter Property="Template">
+   <Setter.Value>
+    <ControlTemplate TargetType="Thumb">
+     <Ellipse Fill="{StaticResource PrismTexto}" Stroke="{StaticResource PrismLaranja}" StrokeThickness="2"/>
+    </ControlTemplate>
+   </Setter.Value>
+  </Setter>
+ </Style>
+ <Style x:Key="SliderPrism" TargetType="Slider">
+  <Setter Property="Height" Value="18"/>
+  <Setter Property="IsMoveToPointEnabled" Value="True"/>
+  <Setter Property="Template">
+   <Setter.Value>
+    <ControlTemplate TargetType="Slider">
+     <Grid Background="Transparent" Height="18">
+      <Border Height="4" CornerRadius="2" Background="{StaticResource PrismDivisor}" VerticalAlignment="Center"/>
+      <Track x:Name="PART_Track">
+       <Track.DecreaseRepeatButton><RepeatButton Command="Slider.DecreaseLarge" Style="{StaticResource TrilhaPreenchida}"/></Track.DecreaseRepeatButton>
+       <Track.IncreaseRepeatButton><RepeatButton Command="Slider.IncreaseLarge" Style="{StaticResource TrilhaVazia}"/></Track.IncreaseRepeatButton>
+       <Track.Thumb><Thumb Style="{StaticResource PolegarPrism}"/></Track.Thumb>
+      </Track>
+     </Grid>
+    </ControlTemplate>
+   </Setter.Value>
+  </Setter>
+ </Style>
+</ResourceDictionary>

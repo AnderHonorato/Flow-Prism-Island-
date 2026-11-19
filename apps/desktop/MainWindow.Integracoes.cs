@@ -50,13 +50,47 @@ public partial class MainWindow
         if (janelaDock is not null) { janelaDock.Close(); janelaDock = null; }
     }
 
+    private bool miniBarrasAnimando;
+
     private void AtualizarStatusCompacto()
     {
-        TituloPrincipal.Text = midiaAtual.TemSessao && midiaAtual.Tocando
-            ? midiaAtual.Titulo : "PRISM ISLAND";
+        bool tocando = midiaAtual.TemSessao && midiaAtual.Tocando;
+        TituloPrincipal.Text = tocando ? midiaAtual.Titulo : "PRISM ISLAND";
         StatusCompacto.Text = midiaAtual.TemSessao
             ? (midiaAtual.Tocando ? "Reproduzindo • " : "Pausada • ") + midiaAtual.Aplicativo
             : DateTime.Now.ToString("HH:mm") + (foco.Rodando ? " • Foco ativo" : " • Ander Flow");
+
+        // Atividade compacta: equalizador com mídia tocando e tempo restante com foco ativo.
+        MiniBarras.Visibility = tocando ? Visibility.Visible : Visibility.Collapsed;
+        MiniTempo.Visibility = foco.Rodando ? Visibility.Visible : Visibility.Collapsed;
+        if (foco.Rodando)
+            MiniTempo.Text = $"{(int)foco.Restante.TotalMinutes:00}:{foco.Restante.Seconds:00}";
+        AnimarMiniBarras(tocando);
+
+        double desejada = 232 + (tocando ? 40 : 0) + (foco.Rodando ? 52 : 0);
+        if (Math.Abs(desejada - larguraRecolhida) > 0.5)
+        {
+            larguraRecolhida = desejada;
+            if (!ilha.EstaExpandida) AjustarJanela(false);
+        }
+    }
+
+    private void AnimarMiniBarras(bool tocando)
+    {
+        if (tocando == miniBarrasAnimando) return;
+        miniBarrasAnimando = tocando;
+        var barras = new[] { MiniBarra1, MiniBarra2, MiniBarra3 };
+        var tempos = new[] { 360, 450, 540 };
+        for (int i = 0; i < barras.Length; i++)
+        {
+            if (!tocando || !SystemParameters.MenuAnimation)
+            {
+                barras[i].BeginAnimation(HeightProperty, null);
+                continue;
+            }
+            barras[i].BeginAnimation(HeightProperty, new DoubleAnimation(3d, 13d, TimeSpan.FromMilliseconds(tempos[i]))
+            { AutoReverse = true, RepeatBehavior = RepeatBehavior.Forever });
+        }
     }
 
     private async Task AtualizarMidiaAsync()
