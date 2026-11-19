@@ -27,3 +27,24 @@ Conector GitHub autenticado na conta AnderHonorato, mas não dispõe de ação d
 
 ## Checklist
 Fonte de verdade: docs/backlog/TAREFAS.json. Mesmo com código compilado, recursos que exigem teste visual permanecem em andamento ou aguardando teste.
+
+## Integração Prism v0.3.0 (18/11/2026)
+- [x] Fonte do usuário: PATCH/ZIP Prism UI v2 recebido e incorporado em worktree isolada.
+- [x] Correção dos conflitos de Button entre WPF e Windows Forms no módulo de cópias.
+- [x] Tema Prism e ícones, atividade compacta, auto-ocultação, tela cheia, multi-monitor básico e histórico de cópias integrados no código.
+- [x] Atraso de ocultação configurável em 1500, 2500 e 5000 ms; persistência com normalização para preferências antigas/inválidas.
+- [x] Compilação de desenvolvimento em Windows 11 via .NET 10, sem avisos/erros; 11 testes de lógica passando.
+- [ ] Validar visualmente a interface em múltiplos DPI/monitores, incluindo ultrawide.
+- [ ] Validar o executável distribuído em máquina Windows limpa, com players reais e autoinício.
+- [ ] Validar o instalador pelo pipeline CI e publicar prévia GitHub distinta da versão 0.2.0.
+- [ ] Estilização avançada e reversível da barra de tarefas e janelas Windows (fora desta entrega).
+
+## Mod Windows v0.4.0 (19/11/2026)
+- [x] Ações nativas no Windows 11: tema de apps/sistema, cor de contorno, alinhamento de ícones da taskbar.
+- [x] Backup não sobrescrito por usuário, restauração explícita, confirmação antes de alterar; nenhuma alteração global/admin automática.
+- [x] Regras de estilo Taskbar Styler geradas para Windhawk e documentadas, com importação manual.
+- [x] Aba Desktop com rolagem, controles reais separados do Dock Flow auxiliar.
+- [x] 14 testes automatizados Windows aprovados, incluindo backup não invasivo.
+- [ ] Validar visualmente todos os controles na sessão Lil; a compilação/testes ocorre no ambiente remoto Pichau.
+- [ ] Aplicar e verificar Windhawk manualmente no Explorer após instalação e consentimento do usuário.
+- [ ] Validar instalação/distribuição Windows em máquina limpa antes de chamar release estável.
