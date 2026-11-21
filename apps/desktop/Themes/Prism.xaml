@@ -42,10 +42,25 @@
     <ControlTemplate TargetType="Button">
      <Border x:Name="Raiz" Background="{TemplateBinding Background}" CornerRadius="11"
              Padding="{TemplateBinding Padding}" BorderBrush="Transparent" BorderThickness="1">
+      <Border.RenderTransform><ScaleTransform ScaleX="1" ScaleY="1"/></Border.RenderTransform>
       <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
      </Border>
      <ControlTemplate.Triggers>
-      <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Raiz" Property="Opacity" Value="0.85"/></Trigger>
+      <Trigger Property="IsMouseOver" Value="True">
+       <Setter TargetName="Raiz" Property="Opacity" Value="0.95"/>
+       <Trigger.EnterActions><BeginStoryboard><Storyboard>
+        <DoubleAnimation Storyboard.TargetName="Raiz" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                         To="1.025" Duration="0:0:0.17"/>
+        <DoubleAnimation Storyboard.TargetName="Raiz" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                         To="1.025" Duration="0:0:0.17"/>
+       </Storyboard></BeginStoryboard></Trigger.EnterActions>
+       <Trigger.ExitActions><BeginStoryboard><Storyboard>
+        <DoubleAnimation Storyboard.TargetName="Raiz" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                         To="1" Duration="0:0:0.18"/>
+        <DoubleAnimation Storyboard.TargetName="Raiz" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                         To="1" Duration="0:0:0.18"/>
+       </Storyboard></BeginStoryboard></Trigger.ExitActions>
+      </Trigger>
       <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Raiz" Property="BorderBrush" Value="{StaticResource PrismLaranja}"/></Trigger>
       <Trigger Property="IsEnabled" Value="False"><Setter TargetName="Raiz" Property="Opacity" Value="0.4"/></Trigger>
      </ControlTemplate.Triggers>
@@ -249,6 +264,7 @@
     <ControlTemplate TargetType="Button">
      <Border x:Name="Fundo" Background="{TemplateBinding Background}" CornerRadius="12" BorderBrush="#302B3A" BorderThickness="1"
              Padding="{TemplateBinding Padding}">
+      <Border.RenderTransform><ScaleTransform ScaleX="1" ScaleY="1"/></Border.RenderTransform>
       <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
        <Path Data="{TemplateBinding Tag}" Stroke="{TemplateBinding Foreground}" StrokeThickness="1.6"
              Width="17" Height="17" Stretch="Uniform" StrokeLineJoin="Round"
@@ -258,8 +274,19 @@
      </Border>
      <ControlTemplate.Triggers>
       <Trigger Property="IsMouseOver" Value="True">
-       <Setter TargetName="Fundo" Property="BorderBrush" Value="#C77950"/>
-       <Setter TargetName="Fundo" Property="Opacity" Value="0.94"/>
+       <Setter TargetName="Fundo" Property="Opacity" Value="0.95"/>
+       <Trigger.EnterActions><BeginStoryboard><Storyboard>
+        <DoubleAnimation Storyboard.TargetName="Fundo" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                         To="1.025" Duration="0:0:0.17"/>
+        <DoubleAnimation Storyboard.TargetName="Fundo" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                         To="1.025" Duration="0:0:0.17"/>
+       </Storyboard></BeginStoryboard></Trigger.EnterActions>
+       <Trigger.ExitActions><BeginStoryboard><Storyboard>
+        <DoubleAnimation Storyboard.TargetName="Fundo" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                         To="1" Duration="0:0:0.18"/>
+        <DoubleAnimation Storyboard.TargetName="Fundo" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                         To="1" Duration="0:0:0.18"/>
+       </Storyboard></BeginStoryboard></Trigger.ExitActions>
       </Trigger>
       <Trigger Property="IsKeyboardFocused" Value="True">
        <Setter TargetName="Fundo" Property="BorderBrush" Value="#EE985F"/>
@@ -285,6 +312,45 @@
   <Setter Property="BorderBrush" Value="#5B4C61"/>
   <Setter Property="Padding" Value="8,5"/>
   <Setter Property="MinHeight" Value="34"/>
+ </Style>
+
+
+ <!-- Cores de destaque clicáveis, sem abrir configurações externas -->
+ <Style x:Key="SwatchPrism" TargetType="Button">
+  <Setter Property="Width" Value="35"/>
+  <Setter Property="Height" Value="35"/>
+  <Setter Property="Margin" Value="3,3"/>
+  <Setter Property="Cursor" Value="Hand"/>
+  <Setter Property="BorderThickness" Value="0"/>
+  <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+  <Setter Property="Template">
+   <Setter.Value>
+    <ControlTemplate TargetType="Button">
+     <Border x:Name="Bolinha" Width="32" Height="32" Background="{TemplateBinding Background}"
+             BorderThickness="2" BorderBrush="#60586C" CornerRadius="16" RenderTransformOrigin=".5,.5">
+      <Border.RenderTransform><ScaleTransform ScaleX="1" ScaleY="1"/></Border.RenderTransform>
+      <Ellipse Width="10" Height="10" Fill="#BAFFFFFF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+     </Border>
+     <ControlTemplate.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+       <Setter TargetName="Bolinha" Property="BorderBrush" Value="#FFFFFF"/>
+       <Trigger.EnterActions><BeginStoryboard><Storyboard>
+        <DoubleAnimation Storyboard.TargetName="Bolinha" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                         To="1.13" Duration="0:0:0.16"/>
+        <DoubleAnimation Storyboard.TargetName="Bolinha" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                         To="1.13" Duration="0:0:0.16"/>
+       </Storyboard></BeginStoryboard></Trigger.EnterActions>
+       <Trigger.ExitActions><BeginStoryboard><Storyboard>
+        <DoubleAnimation Storyboard.TargetName="Bolinha" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                         To="1" Duration="0:0:0.16"/>
+        <DoubleAnimation Storyboard.TargetName="Bolinha" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                         To="1" Duration="0:0:0.16"/>
+       </Storyboard></BeginStoryboard></Trigger.ExitActions>
+      </Trigger>
+     </ControlTemplate.Triggers>
+    </ControlTemplate>
+   </Setter.Value>
+  </Setter>
  </Style>
 
 </ResourceDictionary>
