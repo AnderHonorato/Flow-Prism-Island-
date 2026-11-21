@@ -118,4 +118,22 @@ Testar("Backup de mod salva e relê sem alterar opções do Windows", () => {
     }
     finally { if (Directory.Exists(pasta)) Directory.Delete(pasta, true); }
 });
+Testar("Prism Studio normaliza personalização interna", () => {
+    Exigir(EstiloStudio.Opacity(0.1) == 0.65, "Opacidade mínima segura");
+    Exigir(EstiloStudio.Opacity(3) == 1, "Opacidade máxima");
+    Exigir(EstiloStudio.Opacity(.82) == .82, "Opacidade solicitada");
+    Exigir(EstiloStudio.PosicaoDock("outra") == "inferior", "Posição inválida não deve ir para o Windows");
+    Exigir(EstiloStudio.PosicaoDock("superior") == "superior", "Posição topo");
+});
+Testar("Progresso e busca de mídia respeitam duração e extremos", () => {
+    Exigir(LinhaTempoMidia.Percentual(TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(120)) == 25, "Progresso real");
+    Exigir(LinhaTempoMidia.Percentual(TimeSpan.FromSeconds(2), TimeSpan.Zero) == 0, "Mídia sem duração");
+    Exigir(LinhaTempoMidia.Posicao(130, TimeSpan.FromSeconds(60)) == TimeSpan.FromSeconds(60), "Seek limita 100");
+    Exigir(LinhaTempoMidia.Posicao(-3, TimeSpan.FromSeconds(60)) == TimeSpan.Zero, "Seek limita zero");
+});
+Testar("Métricas exibem ausência de telemetria sem inventar número", () => {
+    Exigir(MetricasSistema.FormatarPercentual(null) == "Indisponível", "Valor ausente");
+    Exigir(MetricasSistema.FormatarPercentual(54.25) == "54%", "Arredondamento");
+    Exigir(MetricasSistema.FormatarMemoria(0, 0) == "Indisponível", "Sem RAM não inventar percentual");
+});
 Console.WriteLine($"VALIDADOS: {verificados} testes de lógica.");
