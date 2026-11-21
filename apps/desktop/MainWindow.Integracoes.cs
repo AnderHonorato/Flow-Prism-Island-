@@ -107,6 +107,8 @@ public partial class MainWindow
                 ? (string.IsNullOrWhiteSpace(midiaAtual.Artista) ? "Artista não informado" : midiaAtual.Artista)
                 : "Abra um player com suporte à mídia do Windows";
             TextoOrigem.Text = midiaAtual.Aplicativo;
+            AtualizarListaPlayers();
+            AtualizarCapaMusica();
             BotaoPlay.IsEnabled = midiaAtual.PodePausar;
             BotaoAnterior.IsEnabled = midiaAtual.PodeVoltar;
             BotaoProximo.IsEnabled = midiaAtual.PodeAvancar;
@@ -114,9 +116,8 @@ public partial class MainWindow
             TextoRetornoMidia.Text = midiaAtual.TemSessao
                 ? "Controlando a sessão real do Windows" : "Nenhum player compatível detectado";
             var duracao = midiaAtual.Duracao.TotalSeconds;
-            ProgressoFaixa.Value = duracao > 0
-                ? Math.Clamp(midiaAtual.Posicao.TotalSeconds / duracao * 100d, 0d, 100d)
-                : 0;
+            if (!buscandoFaixa) ProgressoFaixa.Value = LinhaTempoMidia.Percentual(midiaAtual.Posicao, midiaAtual.Duracao);
+            ProgressoFaixa.IsEnabled = midiaAtual.PodeBuscar && duracao > 0;
             TextoPosicao.Text = duracao > 0 ? FormatarTempo(midiaAtual.Posicao) : "--:--";
             TextoDuracao.Text = duracao > 0 ? FormatarTempo(midiaAtual.Duracao) : "--:--";
             if (!audioReativoAtivo && anterior.Tocando != midiaAtual.Tocando) AnimarBarras(midiaAtual.Tocando);
@@ -328,9 +329,10 @@ public partial class MainWindow
     private void MostrarDock()
     {
         if (janelaDock is not null) return;
-        janelaDock = new DockWindow(() => {
-            Dispatcher.Invoke(() => { Show(); Expandir(); AtualizarAbas("midia"); Activate(); });
-        });
+        janelaDock = new DockWindow(
+            () => Dispatcher.Invoke(() => { Show(); Expandir(); AtualizarAbas("midia"); Activate(); }),
+            () => Dispatcher.Invoke(() => { Show(); Expandir(); AtualizarAbas("desktop"); Activate(); }));
+        janelaDock.AtualizarPreferencias(opacidadeDock, posicaoDock);
         janelaDock.Closed += (_, _) => { janelaDock = null; };
         janelaDock.Show();
         BotaoDock.Content = "Desativar Dock Flow";
@@ -391,13 +393,5 @@ public partial class MainWindow
         else TextoDesktop.Text = "O Windows não permitiu restaurar.";
     }
 
-    private void AoAbrirBarraWindows(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            Process.Start(new ProcessStartInfo("ms-settings:taskbar") { UseShellExecute = true });
-            TextoDesktop.Text = "Configurações da barra original abertas. O Prism Island não altera o Explorer.";
-        }
-        catch (Exception erro) { TextoDesktop.Text = erro.Message; }
-    }
+
 }

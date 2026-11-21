@@ -65,3 +65,14 @@ As melhorias da interface partiram dos arquivos PATCH/ZIP fornecidos pelo usuár
 
 ## v0.4.0-dev — mod real do Windows 11
 A aba Desktop agora possui controles nativos para o Windows **real**: tema claro/escuro, alinhamento dos ícones da barra de tarefas e contorno das janelas. O aplicativo salva o estado original por usuário antes de qualquer alteração, pede confirmação e oferece restauração. Para estilo avançado da barra original, inclui um preset para **Windows 11 Taskbar Styler (Windhawk)** com seletores do Explorer; sua instalação e aplicação são opcionais e manuais. Consulte [docs/MOD_REAL_WINDOWS.md](docs/MOD_REAL_WINDOWS.md). Nenhuma modificação é aplicada automaticamente durante build, teste ou inicialização.
+
+## Prism Studio v0.5.0-preview — interface premium integrada
+
+- Navegação lateral, cartões em camadas, efeitos suaves, controles vetoriais e janela expandida com conteúdo rolável.
+- Mídia GSMTC: escolha de player, metadados, capa quando disponibilizada, controle de reprodução, busca na faixa quando permitida e volume global.
+- Painel de desempenho com **dados locais reais** de CPU, RAM, disco e rede; ausência de dado é exibida como indisponível.
+- Dock Flow com posição superior/inferior e opacidade configuráveis dentro do Prism; o botão Studio reabre o próprio app.
+- Controles internos de opacidade da ilha, restauração do visual, e sessões de foco de 15, 25 ou 50 minutos.
+- Desktop Atelier aplica apenas opções nativas previamente existentes com confirmação e restauração. Não abre páginas de Configurações do Windows.
+- Notificações globais continuam dependendo de identidade de pacote/permissões específicas; sem inventar eventos.
+- O aplicativo permanece uma **prévia**, ainda sujeito a validação visual e de players no PC.

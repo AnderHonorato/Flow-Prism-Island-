@@ -78,27 +78,4 @@ public partial class MainWindow
         }
     }
 
-    private void AoModWindhawk(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            string pasta = Path.Combine(Environment.GetFolderPath(
-                Environment.SpecialFolder.ApplicationData), "Ander Flow", "Prism Island");
-            Directory.CreateDirectory(pasta);
-            string arquivo = Path.Combine(pasta, "prism-taskbar-styler.yaml");
-            string configuracao = PlanoModWindows.GerarConfigWindhawk();
-            File.WriteAllText(arquivo, configuracao);
-            System.Windows.Clipboard.SetText(configuracao);
-            Process.Start(new ProcessStartInfo(
-                "https://windhawk.net/mods/windows-11-taskbar-styler") { UseShellExecute = true });
-
-            TextoDesktop.Text = "Regras de modificação REAL da barra copiadas. " +
-                "No Windhawk instale 'Windows 11 Taskbar Styler', abra Settings > Textual mode, " +
-                "cole e salve. Altera o Explorer, não o dock. Arquivo: " + arquivo;
-        }
-        catch (Exception erro)
-        {
-            TextoDesktop.Text = "Não foi possível preparar o mod Windhawk: " + erro.Message;
-        }
-    }
 }

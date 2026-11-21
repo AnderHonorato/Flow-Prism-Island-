@@ -66,47 +66,83 @@
      </UniformGrid>
      <Border x:Name="PainelMidia" Style="{StaticResource CartaoPrism}" Visibility="Collapsed">
       <StackPanel>
-       <TextBlock Text="TOCANDO AGORA" Style="{StaticResource RotuloSecao}" Margin="2,0,0,9"/>
-       <Grid>
-        <Grid.ColumnDefinitions><ColumnDefinition Width="50"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-        <Border Width="42" Height="42" Background="#372522" CornerRadius="14" BorderBrush="#E8622A" BorderThickness="1">
-         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-          <Rectangle x:Name="BarraMusica1" Height="8" Width="4" Fill="#E8622A" Margin="1,0"/>
-          <Rectangle x:Name="BarraMusica2" Height="16" Width="4" Fill="#E8622A" Margin="1,0"/>
-          <Rectangle x:Name="BarraMusica3" Height="11" Width="4" Fill="#E8622A" Margin="1,0"/>
-         </StackPanel>
-        </Border>
-        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-         <TextBlock x:Name="TextoMusica" Text="Nenhuma mídia em reprodução" FontSize="14" FontWeight="SemiBold"
-                    Foreground="#F5F5F0" TextTrimming="CharacterEllipsis" />
-         <TextBlock x:Name="TextoArtista" Text="Abra Spotify, YouTube ou outro player compatível"
-                    Foreground="#A59FA3" TextTrimming="CharacterEllipsis" FontSize="11" Margin="0,4,0,0"/>
-         <TextBlock x:Name="TextoOrigem" Foreground="#E8622A" FontSize="10" Text=""/>
+       <Grid Margin="1,0,1,14">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="182"/></Grid.ColumnDefinitions>
+        <StackPanel VerticalAlignment="Center">
+         <TextBlock Text="NOW PLAYING" Style="{StaticResource RotuloSecao}" />
+         <TextBlock Text="Seu som, sob controle." Foreground="#A9A2B0" FontSize="11" Margin="0,5,0,0"/>
         </StackPanel>
+        <ComboBox x:Name="ListaPlayers" Grid.Column="1" Style="{StaticResource ComboPrism}"
+                  SelectionChanged="AoTrocarPlayer" ToolTip="Escolher um player detectado no Windows"/>
        </Grid>
-       <ProgressBar x:Name="ProgressoFaixa" Style="{StaticResource ProgressoPrism}" Minimum="0" Maximum="100" Value="0" Margin="3,14,3,7"/>
-       <Grid>
+       <Border Style="{StaticResource CartaoInterior}" Padding="12" Margin="0,0,0,12">
+        <Grid>
+         <Grid.ColumnDefinitions><ColumnDefinition Width="126"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+         <Border Width="116" Height="116" CornerRadius="18" Background="#362A32"
+                 BorderBrush="#5C4858" BorderThickness="1" ClipToBounds="True">
+          <Grid>
+           <Border x:Name="CapaPlaceholder" Background="#362338">
+            <Border.Background>
+             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+              <GradientStop Color="#E8622A" Offset="0"/>
+              <GradientStop Color="#6F3A65" Offset=".52"/>
+              <GradientStop Color="#242139" Offset="1"/>
+             </LinearGradientBrush>
+            </Border.Background>
+            <Path Data="{StaticResource IcMidia}" Stroke="#FBEDE8" StrokeThickness="1.9"
+                  Width="47" Height="47" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+           </Border>
+           <Image x:Name="ImagemCapa" Stretch="UniformToFill" Visibility="Collapsed"/>
+           <Border Background="#980C0B15" VerticalAlignment="Bottom" Padding="0,6">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+             <Rectangle x:Name="BarraMusica1" Height="8" Width="4" RadiusX="2" RadiusY="2" Fill="#F6BC9D" Margin="2,0" VerticalAlignment="Center"/>
+             <Rectangle x:Name="BarraMusica2" Height="16" Width="4" RadiusX="2" RadiusY="2" Fill="#F6BC9D" Margin="2,0" VerticalAlignment="Center"/>
+             <Rectangle x:Name="BarraMusica3" Height="11" Width="4" RadiusX="2" RadiusY="2" Fill="#F6BC9D" Margin="2,0" VerticalAlignment="Center"/>
+            </StackPanel>
+           </Border>
+          </Grid>
+         </Border>
+         <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="4,0,2,0">
+          <TextBlock x:Name="TextoOrigem" Foreground="#E99A67" FontSize="10" FontWeight="Bold" Margin="0,0,0,7"/>
+          <TextBlock x:Name="TextoMusica" Text="Nenhuma mídia em reprodução" Foreground="#F7F3F8"
+                     FontWeight="SemiBold" FontSize="19" TextTrimming="CharacterEllipsis" MaxWidth="300"/>
+          <TextBlock x:Name="TextoArtista" Text="Abra seu player favorito" Foreground="#AAA5B5"
+                     FontSize="12" TextTrimming="CharacterEllipsis" Margin="0,7,0,0"/>
+          <TextBlock Text="Controle integrado ao Windows" FontSize="10" Foreground="#77717F" Margin="0,14,0,0"/>
+         </StackPanel>
+        </Grid>
+       </Border>
+       <Slider x:Name="ProgressoFaixa" Style="{StaticResource SliderPrism}" Minimum="0" Maximum="100" Value="0"
+               IsEnabled="False" IsMoveToPointEnabled="True" PreviewMouseLeftButtonUp="AoBuscarFaixa"
+               Margin="0,5,0,4" ToolTip="Mudar de ponto na música, quando o player permitir"/>
+       <Grid Margin="2,1,2,6">
         <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions>
-        <TextBlock x:Name="TextoPosicao" Text="--:--" FontSize="10" Foreground="#AAA49E"/>
-        <TextBlock x:Name="TextoDuracao" Text="--:--" Grid.Column="1" HorizontalAlignment="Right" FontSize="10" Foreground="#AAA49E"/>
+        <TextBlock x:Name="TextoPosicao" Text="--:--" FontSize="11" Foreground="#A9A6AF"/>
+        <TextBlock x:Name="TextoDuracao" Text="--:--" Grid.Column="1" HorizontalAlignment="Right"
+                   FontSize="11" Foreground="#A9A6AF"/>
        </Grid>
-       <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,9">
-        <Button x:Name="BotaoAnterior" Content="Anterior" ToolTip="Anterior" Style="{StaticResource IconeSolido}" Tag="{StaticResource IcAnterior}" Click="AoMidiaAnterior" IsEnabled="False"/>
-        <Button x:Name="BotaoPlay" Content="Reproduzir" ToolTip="Reproduzir / pausar" Style="{StaticResource IconeSolido}" Background="#E8622A" Width="52" Height="52" Click="AoMidiaPlayPause" IsEnabled="False"/>
-        <Button x:Name="BotaoProximo" Content="Próxima" ToolTip="Próxima" Style="{StaticResource IconeSolido}" Tag="{StaticResource IcProxima}" Click="AoMidiaProxima" IsEnabled="False"/>
+       <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,3,0,12">
+        <Button x:Name="BotaoAnterior" Content="Anterior" ToolTip="Voltar faixa" Style="{StaticResource IconeSolido}"
+                Tag="{StaticResource IcAnterior}" Click="AoMidiaAnterior" IsEnabled="False"/>
+        <Button x:Name="BotaoPlay" Content="Reproduzir" ToolTip="Reproduzir / pausar" Style="{StaticResource IconeSolido}"
+                Background="#E8622A" Width="56" Height="56" Click="AoMidiaPlayPause" IsEnabled="False"/>
+        <Button x:Name="BotaoProximo" Content="Próxima" ToolTip="Avançar faixa" Style="{StaticResource IconeSolido}"
+                Tag="{StaticResource IcProxima}" Click="AoMidiaProxima" IsEnabled="False"/>
        </StackPanel>
-       <Grid Margin="3,0,3,0">
-        <Grid.ColumnDefinitions><ColumnDefinition Width="44"/><ColumnDefinition/><ColumnDefinition Width="45"/></Grid.ColumnDefinitions>
-        <Button x:Name="BotaoMudo" Content="Som" ToolTip="Silenciar" Style="{StaticResource IconeLinha}" Click="AoAlternarMudo"/>
-        <Slider x:Name="SliderVolume" Style="{StaticResource SliderPrism}" Grid.Column="1" Minimum="0" Maximum="100" Value="50"
-                VerticalAlignment="Center" TickFrequency="1" ValueChanged="AoAlterarVolume"/>
-        <TextBlock x:Name="TextoVolume" Text="--%" Grid.Column="2" Foreground="#F5F5F0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-       </Grid>
-       <Button x:Name="BotaoAudioReativo" Content="Ativar animação que reage ao áudio real"
-               Style="{StaticResource Acao}" Click="AoAlternarAudioReativo"
-               ToolTip="Captura local do áudio de saída. Não salva nem transmite."/>
-       <TextBlock x:Name="TextoRetornoMidia" FontSize="10" Foreground="#A6A0A1" Margin="3,9,0,0"
-                  Text="Aguardando uma sessão de mídia do Windows"/>
+       <Border Style="{StaticResource CartaoInterior}" Margin="0,0,0,9" Padding="12,6">
+        <Grid>
+         <Grid.ColumnDefinitions><ColumnDefinition Width="44"/><ColumnDefinition Width="*"/><ColumnDefinition Width="45"/></Grid.ColumnDefinitions>
+         <Button x:Name="BotaoMudo" Content="Som" ToolTip="Silenciar / ativar" Style="{StaticResource IconeLinha}" Click="AoAlternarMudo"/>
+         <Slider x:Name="SliderVolume" Style="{StaticResource SliderPrism}" Grid.Column="1" Minimum="0" Maximum="100"
+                 Value="50" TickFrequency="1" VerticalAlignment="Center" ValueChanged="AoAlterarVolume"/>
+         <TextBlock x:Name="TextoVolume" Text="--%" Grid.Column="2" Foreground="#F7F3F8"
+                    FontWeight="SemiBold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        </Grid>
+       </Border>
+       <Button x:Name="BotaoAudioReativo" Content="Ativar visualização reativa" Style="{StaticResource Acao}"
+               Click="AoAlternarAudioReativo" ToolTip="Animação com intensidade real do áudio, somente após ativação"/>
+       <TextBlock x:Name="TextoRetornoMidia" Text="Aguardando uma sessão do Windows"
+                  FontSize="10" Foreground="#A7A1AF" TextWrapping="Wrap" Margin="5,9,5,0"/>
       </StackPanel>
      </Border>
      <Border x:Name="PainelAlertas" Style="{StaticResource CartaoPrism}" Visibility="Collapsed">
@@ -125,34 +161,66 @@
       </StackPanel>
      </Border>
      <Border x:Name="PainelDesktop" Style="{StaticResource CartaoPrism}" Visibility="Collapsed">
-      <ScrollViewer MaxHeight="325" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-       <StackPanel>
-        <TextBlock Text="MOD REAL DO WINDOWS" Style="{StaticResource RotuloSecao}" Margin="2,0,0,7"/>
-        <TextBlock Text="Muda configurações nativas da conta atual. Confirma antes, cria backup e permite restaurar." FontSize="11" TextWrapping="Wrap" Foreground="#B9B5B3" Margin="3,0,3,8"/>
-        <UniformGrid Columns="2">
-         <Button Content="Windows escuro" Click="AoWindowsEscuro" Style="{StaticResource Acao}"/>
-         <Button Content="Windows claro" Click="AoWindowsClaro" Style="{StaticResource Acao}"/>
-         <Button Content="Ícones à esquerda" Click="AoWindowsAlinharEsquerda" Style="{StaticResource Acao}"/>
-         <Button Content="Ícones no centro" Click="AoWindowsAlinharCentro" Style="{StaticResource Acao}"/>
-        </UniformGrid>
-        <Button Content="Realçar contorno das janelas" Click="AoWindowsBordas" Style="{StaticResource Acao}"/>
-        <Button Content="Restaurar aparência original do Windows" Click="AoWindowsRestaurar" Background="#542C28" Style="{StaticResource Acao}"/>
-        <TextBlock Text="ESTILIZAÇÃO AVANÇADA DO EXPLORER" Style="{StaticResource RotuloSecao}" Margin="2,13,0,7"/>
-        <Button Content="Tema Prism na barra original (Windhawk)" Click="AoModWindhawk" Background="#E8622A" Style="{StaticResource Acao}"/>
-        <TextBlock Text="O Windhawk modifica componentes da barra real. É opcional, requer instalar o mod e importar o tema; não é uma sobreposição." FontSize="10" TextWrapping="Wrap" Foreground="#B9B5B3" Margin="5,6,5,8"/>
-        <Button Content="Configurações oficiais da barra" Click="AoAbrirBarraWindows" Style="{StaticResource Acao}"/>
-        <TextBlock Text="ITENS INDEPENDENTES" Style="{StaticResource RotuloSecao}" Margin="2,13,0,7"/>
-        <Button x:Name="BotaoDock" Content="Ativar Dock Flow (adicional)" Click="AoAlternarDock" Style="{StaticResource Acao}"/>
-        <Button Content="Escolher papel de parede" Click="AoEscolherWallpaper" Style="{StaticResource Acao}"/>
-        <Button Content="Restaurar papel de parede anterior" Click="AoRestaurarWallpaper" Style="{StaticResource Acao}"/>
-        <TextBlock x:Name="TextoDesktop" Text="Nenhuma alteração é feita sem confirmação. A restauração afeta somente mudanças gerenciadas pelo Prism."
-                   FontSize="10" TextWrapping="Wrap" Foreground="#A6A0A1" Margin="5,8,5,0"/>
-       </StackPanel>
-      </ScrollViewer>
+      <StackPanel>
+       <TextBlock Text="DESKTOP ATELIER" Style="{StaticResource RotuloSecao}"/>
+       <TextBlock Text="Personalização em tempo real, tudo dentro do Prism." Foreground="#A9A5B1" FontSize="11" Margin="0,6,0,10"/>
+       <Border Style="{StaticResource CartaoInterior}">
+        <StackPanel>
+         <TextBlock Text="APARÊNCIA DO WINDOWS" Foreground="#F4E4DE" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,8"/>
+         <UniformGrid Columns="2">
+          <Button Content="Modo escuro" Click="AoWindowsEscuro" Style="{StaticResource Acao}"/>
+          <Button Content="Modo claro" Click="AoWindowsClaro" Style="{StaticResource Acao}"/>
+          <Button Content="Barra à esquerda" Click="AoWindowsAlinharEsquerda" Style="{StaticResource Acao}"/>
+          <Button Content="Barra centralizada" Click="AoWindowsAlinharCentro" Style="{StaticResource Acao}"/>
+         </UniformGrid>
+         <Button Content="Ativar bordas de destaque" Click="AoWindowsBordas" Style="{StaticResource Acao}"/>
+         <TextBlock Text="Alterações nativas com confirmação e backup antes de aplicar." Foreground="#978D9F" FontSize="10" TextWrapping="Wrap" Margin="5,6,5,0"/>
+        </StackPanel>
+       </Border>
+       <Border Style="{StaticResource CartaoInterior}">
+        <StackPanel>
+         <TextBlock Text="DOCK FLOW" Foreground="#F4E4DE" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,9"/>
+         <Button x:Name="BotaoDock" Content="Ativar Dock Flow" Click="AoAlternarDock" Background="#E8622A" Style="{StaticResource Acao}"/>
+         <Grid Margin="3,9,3,0">
+          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="154"/></Grid.ColumnDefinitions>
+          <TextBlock Text="Posicionamento" VerticalAlignment="Center" Foreground="#CAC5D2" FontSize="12"/>
+          <ComboBox x:Name="ComboPosicaoDock" Grid.Column="1" Style="{StaticResource ComboPrism}" SelectionChanged="AoMudarPosicaoDock">
+           <ComboBoxItem Content="Inferior" Tag="inferior"/>
+           <ComboBoxItem Content="Superior" Tag="superior"/>
+          </ComboBox>
+         </Grid>
+         <Grid Margin="4,11,4,2">
+          <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+          <TextBlock Text="Transparência do dock" Foreground="#CAC5D2" FontSize="12"/>
+          <TextBlock x:Name="TextoDockOpacidade" Grid.Column="1" Text="92%" Foreground="#E99A67" FontSize="11"/>
+         </Grid>
+         <Slider x:Name="SliderDockOpacidade" Style="{StaticResource SliderPrism}" Minimum="65" Maximum="100"
+                 Value="92" ValueChanged="AoMudarOpacidadeDock" TickFrequency="1" Margin="5,2,5,4"/>
+        </StackPanel>
+       </Border>
+       <Border Style="{StaticResource CartaoInterior}">
+        <StackPanel>
+         <TextBlock Text="PAPEL DE PAREDE" Foreground="#F4E4DE" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,9"/>
+         <UniformGrid Columns="2">
+          <Button Content="Escolher imagem" Click="AoEscolherWallpaper" Style="{StaticResource Acao}"/>
+          <Button Content="Restaurar anterior" Click="AoRestaurarWallpaper" Style="{StaticResource Acao}"/>
+         </UniformGrid>
+        </StackPanel>
+       </Border>
+       <Button Content="Restaurar aparência original do Windows" Click="AoWindowsRestaurar"
+               Background="#492D37" Style="{StaticResource Acao}" Margin="5,4,5,4"/>
+       <TextBlock x:Name="TextoDesktop" Text="Prism aplica apenas as opções selecionadas. Todo ajuste é reversível."
+                  FontSize="10" TextWrapping="Wrap" Foreground="#A9A5B1" Margin="5,7,5,0"/>
+      </StackPanel>
      </Border>
      <Border x:Name="PainelFoco" Style="{StaticResource CartaoPrism}" Visibility="Collapsed">
       <StackPanel>
-       <TextBlock Text="SESSÃO DE FOCO" Style="{StaticResource RotuloSecao}"/>
+       <TextBlock Text="FOCUS SESSIONS" Style="{StaticResource RotuloSecao}"/>
+       <UniformGrid Columns="3" Margin="0,12,0,2">
+        <Button Content="15 min" Style="{StaticResource Acao}" Click="AoFoco15"/>
+        <Button Content="25 min" Style="{StaticResource Acao}" Click="AoFoco25"/>
+        <Button Content="50 min" Style="{StaticResource Acao}" Click="AoFoco50"/>
+       </UniformGrid>
        <TextBlock x:Name="TextoCronometro" Text="25:00" Foreground="#F5F5F0"
                   FontSize="42" FontWeight="SemiBold" FontFamily="Segoe UI" HorizontalAlignment="Center"
                   Margin="0,1,0,1"/>
@@ -167,12 +235,54 @@
      </Border>
      <Border x:Name="PainelSistema" Style="{StaticResource CartaoPrism}" Visibility="Collapsed">
       <StackPanel>
-       <TextBlock Text="ESTADO DO WINDOWS" Style="{StaticResource RotuloSecao}"/>
-       <TextBlock x:Name="TextoMonitor" Text="Monitor principal" Foreground="#F5F5F0" Margin="0,10,0,0" FontSize="13"/>
-       <TextBlock x:Name="TextoMemoria" Text="Uso do aplicativo" Foreground="#B9B5B3" Margin="0,8,0,0" FontSize="12"/>
-       <TextBlock x:Name="TextoUptime" Text="Atividade do sistema" Foreground="#B9B5B3" Margin="0,8,0,0" FontSize="12"/>
-       <Button Content="Configurações de tela" Style="{StaticResource Acao}"
-               Margin="0,12,0,0" Click="AoAbrirConfiguracoesWindows"/>
+       <TextBlock Text="LIVE SYSTEM INSIGHTS" Style="{StaticResource RotuloSecao}"/>
+       <TextBlock Text="Leituras locais do seu computador · atualização contínua" Foreground="#9E99A7"
+                  FontSize="11" Margin="0,6,0,14"/>
+       <UniformGrid Columns="2">
+        <Border Style="{StaticResource CartaoInterior}">
+         <StackPanel>
+          <TextBlock Text="PROCESSADOR" Foreground="#AA9DAF" FontSize="10" FontWeight="Bold"/>
+          <TextBlock x:Name="TextoCpuTotal" Text="Calculando…" Foreground="#F7F3F8" FontSize="25"
+                     FontWeight="SemiBold" Margin="0,5,0,6"/>
+          <ProgressBar x:Name="BarraCpuTotal" Style="{StaticResource ProgressoPrism}" Minimum="0"
+                       Maximum="100" Height="5"/>
+         </StackPanel>
+        </Border>
+        <Border Style="{StaticResource CartaoInterior}">
+         <StackPanel>
+          <TextBlock Text="MEMÓRIA RAM" Foreground="#AA9DAF" FontSize="10" FontWeight="Bold"/>
+          <TextBlock x:Name="TextoRamTotal" Text="Calculando…" Foreground="#F7F3F8" FontSize="25"
+                     FontWeight="SemiBold" Margin="0,5,0,6"/>
+          <ProgressBar x:Name="BarraRamTotal" Style="{StaticResource ProgressoPrism}" Minimum="0"
+                       Maximum="100" Height="5"/>
+         </StackPanel>
+        </Border>
+        <Border Style="{StaticResource CartaoInterior}">
+         <StackPanel>
+          <TextBlock Text="DISCO DO SISTEMA" Foreground="#AA9DAF" FontSize="10" FontWeight="Bold"/>
+          <TextBlock x:Name="TextoDiscoTotal" Text="Calculando…" Foreground="#F7F3F8" FontSize="25"
+                     FontWeight="SemiBold" Margin="0,5,0,6"/>
+          <ProgressBar x:Name="BarraDiscoTotal" Style="{StaticResource ProgressoPrism}" Minimum="0"
+                       Maximum="100" Height="5"/>
+         </StackPanel>
+        </Border>
+        <Border Style="{StaticResource CartaoInterior}">
+         <StackPanel>
+          <TextBlock Text="REDE ATIVA" Foreground="#AA9DAF" FontSize="10" FontWeight="Bold"/>
+          <TextBlock x:Name="TextoRedeAtiva" Text="Calculando…" Foreground="#F7F3F8" FontSize="13"
+                     FontWeight="SemiBold" TextTrimming="CharacterEllipsis" Margin="0,10,0,5"/>
+          <TextBlock Text="Conexão identificada localmente" Foreground="#9E99A7" FontSize="10" TextWrapping="Wrap"/>
+         </StackPanel>
+        </Border>
+       </UniformGrid>
+       <Border Style="{StaticResource CartaoInterior}" Margin="2,10,2,0">
+        <StackPanel>
+         <TextBlock Text="ESTAÇÃO DE TRABALHO" Foreground="#E99A67" FontWeight="Bold" FontSize="10" Margin="0,0,0,8"/>
+         <TextBlock x:Name="TextoMonitor" Text="Detectando monitor" Foreground="#F7F3F8" FontSize="12"/>
+         <TextBlock x:Name="TextoMemoria" Text="Consumo deste aplicativo" Foreground="#B8B1C1" FontSize="11" Margin="0,8,0,0"/>
+         <TextBlock x:Name="TextoUptime" Text="Tempo ativo" Foreground="#B8B1C1" FontSize="11" Margin="0,6,0,0"/>
+        </StackPanel>
+       </Border>
       </StackPanel>
      </Border>
      <Border x:Name="PainelCopias" Style="{StaticResource CartaoPrism}" Visibility="Collapsed">
@@ -189,23 +299,36 @@
      </Border>
      <Border x:Name="PainelAjustes" Style="{StaticResource CartaoPrism}" Visibility="Collapsed">
       <StackPanel>
-       <TextBlock Text="PERSONALIZAÇÃO" Foreground="#E8622A" FontSize="10" FontWeight="Bold"
-                  Margin="5,3,0,8"/>
-       <Button x:Name="BotaoTema" Content="Tema: Prism Flow" Style="{StaticResource Acao}"
-               Click="AoAlternarTema"/>
-       <Button x:Name="BotaoAutoInicio" Content="Iniciar com Windows: desligado"
-               Style="{StaticResource Acao}" Click="AoAlternarAutoInicio"/>
-       <Button x:Name="BotaoAutoOcultar" Content="Ocultar automaticamente: ligado"
-               Style="{StaticResource Acao}" Click="AoAlternarAutoOcultar"
-               ToolTip="Esconde a ilha do topo da tela. Ela volta ao encostar o mouse no topo, no centro."/>
-       <Button x:Name="BotaoTempoOcultacao" Content="Tempo para ocultar: 2,5 s"
-               Style="{StaticResource Acao}" Click="AoAlternarTempoOcultacao"
-               ToolTip="Escolha entre 1,5 s, 2,5 s e 5 s para liberar o topo da tela."/>
-       <Button x:Name="BotaoTelaCheia" Content="Ocultar em tela cheia: ligado"
-               Style="{StaticResource Acao}" Click="AoAlternarTelaCheia"
-               ToolTip="Some quando um jogo, vídeo ou apresentação ocupa a tela inteira."/>
-       <TextBlock Text="Atalho global: Ctrl + Shift + Espaço  •  Mouse no topo central revela a ilha" Foreground="#B2ABA4"
-                  Margin="6,9,0,3" FontSize="11"/>
+       <TextBlock Text="PRISM PREFERENCES" Style="{StaticResource RotuloSecao}"/>
+       <TextBlock Text="Personalize a ilha sem sair do aplicativo." Foreground="#A9A4B0" FontSize="11" Margin="0,6,0,12"/>
+       <Border Style="{StaticResource CartaoInterior}">
+        <StackPanel>
+         <TextBlock Text="IDENTIDADE VISUAL" Foreground="#F4E4DE" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,8"/>
+         <Button x:Name="BotaoTema" Content="Tema: Prism Flow" Style="{StaticResource Acao}" Click="AoAlternarTema"/>
+         <Grid Margin="5,8,5,0">
+          <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+          <TextBlock Text="Opacidade da ilha" Foreground="#CBC4D2" FontSize="12"/>
+          <TextBlock x:Name="TextoOpacidade" Grid.Column="1" Text="96%" Foreground="#E99A67" FontSize="11"/>
+         </Grid>
+         <Slider x:Name="SliderIlhaOpacidade" Style="{StaticResource SliderPrism}" Minimum="65" Maximum="100" Value="96"
+                 TickFrequency="1" ValueChanged="AoMudarOpacidadeIlha" Margin="4,6,4,4"/>
+        </StackPanel>
+       </Border>
+       <Border Style="{StaticResource CartaoInterior}">
+        <StackPanel>
+         <TextBlock Text="COMPORTAMENTO" Foreground="#F4E4DE" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,7"/>
+         <Button x:Name="BotaoAutoInicio" Content="Iniciar com Windows: desligado"
+                 Style="{StaticResource Acao}" Click="AoAlternarAutoInicio"/>
+         <Button x:Name="BotaoAutoOcultar" Content="Ocultar automaticamente: ligado"
+                 Style="{StaticResource Acao}" Click="AoAlternarAutoOcultar"/>
+         <Button x:Name="BotaoTempoOcultacao" Content="Tempo para ocultar: 2,5 s"
+                 Style="{StaticResource Acao}" Click="AoAlternarTempoOcultacao"/>
+         <Button x:Name="BotaoTelaCheia" Content="Ocultar em tela cheia: ligado"
+                 Style="{StaticResource Acao}" Click="AoAlternarTelaCheia"/>
+        </StackPanel>
+       </Border>
+       <Button Content="Restaurar visual do Prism" Click="AoRestaurarStudio" Style="{StaticResource Acao}" Margin="5,4"/>
+       <TextBlock Text="Atalho global  Ctrl + Shift + Espaço" Foreground="#9D96A8" FontSize="11" Margin="7,9,0,0"/>
       </StackPanel>
      </Border>
      <Grid Margin="6,12,4,0">

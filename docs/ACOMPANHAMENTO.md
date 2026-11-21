@@ -48,3 +48,10 @@ Fonte de verdade: docs/backlog/TAREFAS.json. Mesmo com código compilado, recurs
 - [ ] Validar visualmente todos os controles na sessão Lil; a compilação/testes ocorre no ambiente remoto Pichau.
 - [ ] Aplicar e verificar Windhawk manualmente no Explorer após instalação e consentimento do usuário.
 - [ ] Validar instalação/distribuição Windows em máquina limpa antes de chamar release estável.
+
+## v0.5.0 — reformulação premium em validação
+- Redesign do Studio, player selecionável, artwork, barra de seek, métricas locais ao vivo.
+- Opacidade e posicionamento do dock e da ilha editáveis sem ferramentas externas.
+- Sessões de foco configuráveis em 15, 25 ou 50 minutos.
+- Gatilhos que abriam Configurações do Windows foram removidos da interface.
+- Importante: build automatizado, validação no PC e pacote devem ser conferidos antes de considerar a versão publicada.

@@ -23,6 +23,8 @@ public sealed class DockWindow : Window
     private readonly WrapPanel appsAbertos = new() { Orientation = Orientation.Horizontal };
     private readonly DispatcherTimer atualizar = new() { Interval = TimeSpan.FromSeconds(8) };
     private readonly Action abrirMidia;
+    private readonly Action abrirStudio;
+    private string posicao = "inferior";
 
     [DllImport("user32.dll")]
     private static extern bool EnumWindows(EnumerarJanela proc, IntPtr parametro);
@@ -39,12 +41,13 @@ public sealed class DockWindow : Window
     [DllImport("user32.dll")]
     private static extern bool ShowWindow(IntPtr janela, int codigo);
 
-    public DockWindow(Action abrirMidia)
+    public DockWindow(Action abrirMidia, Action abrirStudio)
     {
         this.abrirMidia = abrirMidia;
+        this.abrirStudio = abrirStudio;
         Title = "Dock Flow";
-        Width = 600;
-        Height = 85;
+        Width = 650;
+        Height = 82;
         ResizeMode = ResizeMode.NoResize;
         WindowStyle = WindowStyle.None;
         AllowsTransparency = true;
@@ -55,21 +58,22 @@ public sealed class DockWindow : Window
         WindowStartupLocation = WindowStartupLocation.Manual;
         var area = SystemParameters.WorkArea;
         Left = area.Left + Math.Max(0, (area.Width - Width) / 2);
-        Top = area.Bottom - Height - 5;
+        Top = area.Bottom - Height - 9;
 
         var bordo = new Border
         {
-            Background = Cor("#0A0A0F"),
-            BorderBrush = Cor("#E8622A"),
+            Background = new LinearGradientBrush(CorRgb("#221E32"), CorRgb("#0B0A13"), 16),
+            BorderBrush = Cor("#A26B61"),
             BorderThickness = new Thickness(1),
-            CornerRadius = new CornerRadius(20),
-            Padding = new Thickness(10, 9, 10, 9)
+            CornerRadius = new CornerRadius(21),
+            Padding = new Thickness(12, 9, 12, 9),
+            Effect = new System.Windows.Media.Effects.DropShadowEffect { Color = System.Windows.Media.Colors.Black, BlurRadius = 28, ShadowDepth = 9, Opacity = 0.55 }
         };
         var linha = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = System.Windows.VerticalAlignment.Center };
         linha.Children.Add(CriarBotao("FL", "Abrir Prism Island", () => this.abrirMidia(), true));
         linha.Children.Add(CriarBotao("Files", "Explorador de arquivos", () => Iniciar("explorer.exe")));
         linha.Children.Add(CriarBotao("Web", "Navegador padrão", () => Iniciar("https://www.google.com")));
-        linha.Children.Add(CriarBotao("Ajustes", "Configurações do Windows", () => Iniciar("ms-settings:")));
+        linha.Children.Add(CriarBotao("Studio", "Personalização dentro do Prism", () => this.abrirStudio()));
         linha.Children.Add(new Border
         {
             Width = 1, Height = 38, Background = Cor("#544F55"),
@@ -92,6 +96,16 @@ public sealed class DockWindow : Window
     }
 
     private static Brush Cor(string cor) => (Brush)new BrushConverter().ConvertFromString(cor)!;
+    private static Color CorRgb(string cor) => (Color)ColorConverter.ConvertFromString(cor);
+
+    public void AtualizarPreferencias(double opacidade, string novaPosicao)
+    {
+        posicao = AnderFlowPrismIsland.Logic.EstiloStudio.PosicaoDock(novaPosicao);
+        Opacity = AnderFlowPrismIsland.Logic.EstiloStudio.Opacity(opacidade);
+        var area = SystemParameters.WorkArea;
+        Left = area.Left + Math.Max(0, (area.Width - Width) / 2);
+        Top = posicao == "superior" ? area.Top + 70 : area.Bottom - Height - 9;
+    }
 
     private Button CriarBotao(string texto, string dica, Action acao, bool destaque = false)
     {

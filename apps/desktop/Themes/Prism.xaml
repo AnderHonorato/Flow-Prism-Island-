@@ -148,9 +148,9 @@
 
  <!-- ===== Cartão de módulo ===== -->
  <Style x:Key="CartaoPrism" TargetType="Border">
-  <Setter Property="Background" Value="{StaticResource PrismGrafite}"/>
-  <Setter Property="CornerRadius" Value="16"/>
-  <Setter Property="Padding" Value="14"/>
+  <Setter Property="Background" Value="#1C1A29"/>
+  <Setter Property="CornerRadius" Value="19"/>
+  <Setter Property="Padding" Value="17"/>
   <Setter Property="BorderBrush" Value="#26232A"/>
   <Setter Property="BorderThickness" Value="1"/>
  </Style>
@@ -230,4 +230,61 @@
    </Setter.Value>
   </Setter>
  </Style>
+
+ <!-- ===== Prism Studio: navegação editorial e superfícies premium ===== -->
+ <Style x:Key="AbaLateral" TargetType="Button">
+  <Setter Property="Background" Value="#171823"/>
+  <Setter Property="Foreground" Value="#D8D5E2"/>
+  <Setter Property="FontFamily" Value="Segoe UI"/>
+  <Setter Property="FontSize" Value="12"/>
+  <Setter Property="FontWeight" Value="SemiBold"/>
+  <Setter Property="Height" Value="43"/>
+  <Setter Property="Margin" Value="1,3"/>
+  <Setter Property="Padding" Value="12,8"/>
+  <Setter Property="BorderThickness" Value="0"/>
+  <Setter Property="Cursor" Value="Hand"/>
+  <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+  <Setter Property="Template">
+   <Setter.Value>
+    <ControlTemplate TargetType="Button">
+     <Border x:Name="Fundo" Background="{TemplateBinding Background}" CornerRadius="12" BorderBrush="#302B3A" BorderThickness="1"
+             Padding="{TemplateBinding Padding}">
+      <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+       <Path Data="{TemplateBinding Tag}" Stroke="{TemplateBinding Foreground}" StrokeThickness="1.6"
+             Width="17" Height="17" Stretch="Uniform" StrokeLineJoin="Round"
+             VerticalAlignment="Center" Margin="0,0,12,0"/>
+       <ContentPresenter VerticalAlignment="Center"/>
+      </StackPanel>
+     </Border>
+     <ControlTemplate.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+       <Setter TargetName="Fundo" Property="BorderBrush" Value="#C77950"/>
+       <Setter TargetName="Fundo" Property="Opacity" Value="0.94"/>
+      </Trigger>
+      <Trigger Property="IsKeyboardFocused" Value="True">
+       <Setter TargetName="Fundo" Property="BorderBrush" Value="#EE985F"/>
+      </Trigger>
+     </ControlTemplate.Triggers>
+    </ControlTemplate>
+   </Setter.Value>
+  </Setter>
+ </Style>
+ <Style x:Key="CartaoInterior" TargetType="Border">
+  <Setter Property="Background" Value="#211F2D"/>
+  <Setter Property="BorderBrush" Value="#393142"/>
+  <Setter Property="BorderThickness" Value="1"/>
+  <Setter Property="CornerRadius" Value="16"/>
+  <Setter Property="Padding" Value="15"/>
+  <Setter Property="Margin" Value="3,3,3,7"/>
+ </Style>
+ <Style x:Key="ComboPrism" TargetType="ComboBox">
+  <Setter Property="FontFamily" Value="Segoe UI"/>
+  <Setter Property="FontSize" Value="12"/>
+  <Setter Property="Background" Value="#302A37"/>
+  <Setter Property="Foreground" Value="#181620"/>
+  <Setter Property="BorderBrush" Value="#5B4C61"/>
+  <Setter Property="Padding" Value="8,5"/>
+  <Setter Property="MinHeight" Value="34"/>
+ </Style>
+
 </ResourceDictionary>

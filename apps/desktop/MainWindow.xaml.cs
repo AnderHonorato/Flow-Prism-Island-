@@ -36,7 +36,7 @@ public partial class MainWindow : Window
     private string tema = "prism";
     private bool iniciarComWindows;
     private bool encerrando;
-    private double larguraRecolhida = 232;
+    private double larguraRecolhida = 282;
     private bool autoOcultar = true;
     private int tempoAutoOcultarMs = TempoOcultacao.PadraoMs;
     private bool oculta;
@@ -104,6 +104,7 @@ public partial class MainWindow : Window
         ultimaInteracao = DateTime.UtcNow;
         vigia.Start();
         IniciarIntegracoes();
+        AplicarPreferenciasStudio();
     }
 
     private void Posicionar()
@@ -130,8 +131,8 @@ public partial class MainWindow : Window
 
     private void AjustarJanela(bool expandida)
     {
-        double largura = expandida ? 528 : larguraRecolhida;
-        double altura = expandida ? 500 : 48;
+        double largura = expandida ? 752 : larguraRecolhida;
+        double altura = expandida ? 620 : 56;
         var area = AreaTrabalho();
         if (expandida) PainelAberto.Visibility = Visibility.Visible;
         IndicadorAbertura.Text = expandida ? "⌃" : "⌄";
@@ -409,17 +410,27 @@ public partial class MainWindow : Window
     {
         bool claro = tema == "claro";
         bool mono = tema == "mono";
-        BordaPrincipal.Background = Cor(claro ? "#F0F0EB" : "#0A0A0F");
-        BordaPrincipal.BorderBrush = Cor(claro ? "#B9B2A8" : mono ? "#6B6770" : "#6B4438");
-        var texto = Cor(claro ? "#19191C" : "#F5F5F0");
-        TituloPrincipal.Foreground = texto;
-        TextoTituloPainel.Foreground = texto;
-        TextoCronometro.Foreground = texto;
-        TextoMonitor.Foreground = texto;
-        IndicadorAbertura.Foreground = Cor(mono ? "#BBB7AE" : "#E8622A");
+        var gradiente = new LinearGradientBrush
+        {
+            StartPoint = new Point(0, 0),
+            EndPoint = new Point(1, 1)
+        };
+        gradiente.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString(
+            claro ? "#EFE8E5" : mono ? "#22232A" : tema == "preto" ? "#14141A" : "#1B182A"), 0));
+        gradiente.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString(
+            claro ? "#D9CED4" : mono ? "#0F1015" : "#0A0A12"), 1));
+        BordaPrincipal.Background = gradiente;
+        BordaPrincipal.BorderBrush = Cor(claro ? "#BB9F9B" : mono ? "#65616B" : "#755369");
+        var textoCabecalho = Cor(claro ? "#211C29" : "#F7F4FA");
+        TituloPrincipal.Foreground = textoCabecalho;
+        TextoTituloPainel.Foreground = Cor("#FCF9F5");
+        TextoCronometro.Foreground = Cor("#F7F4FA");
+        TextoMonitor.Foreground = Cor("#F7F4FA");
+        IndicadorAbertura.Foreground = Cor(claro ? "#9E5039" : "#F0A16B");
         PainelFoco.Background = PainelSistema.Background = PainelAjustes.Background =
-            Cor(claro ? "#E2DFD9" : "#18171D");
-        BotaoTema.Content = "Tema: " + (claro ? "Fosco Claro" : mono ? "Monocromático" : tema == "preto" ? "Preto Clássico" : "Prism Flow");
+            Cor("#1C1A29");
+        BotaoTema.Content = "Tema: " + (claro ? "Pérola" : mono ? "Grafite" : tema == "preto" ? "Ônix" : "Prism Flow");
+        Opacity = EstiloStudio.Opacity(opacidadeIlha);
     }
 
     private void AoAlternarTema(object sender, RoutedEventArgs e)
@@ -450,19 +461,13 @@ public partial class MainWindow : Window
         }
     }
 
-    private void AoAbrirConfiguracoesWindows(object sender, RoutedEventArgs e)
-    {
-        try { Process.Start(new ProcessStartInfo("ms-settings:display") { UseShellExecute = true }); }
-        catch (Exception erro) { TextoRodape.Text = erro.Message; }
-    }
-
     private void SalvarConfiguracoes()
     {
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(caminhoConfiguracoes)!);
             File.WriteAllText(caminhoConfiguracoes,
-                JsonSerializer.Serialize(new Preferencias(tema, iniciarComWindows, dockAtivo, papelAnterior, autoOcultar, ocultarEmTelaCheia, tempoAutoOcultarMs)));
+                JsonSerializer.Serialize(new Preferencias(tema, iniciarComWindows, dockAtivo, papelAnterior, autoOcultar, ocultarEmTelaCheia, tempoAutoOcultarMs, opacidadeIlha, opacidadeDock, posicaoDock)));
         }
         catch (Exception erro) { TextoRodape.Text = "Falha ao salvar: " + erro.Message; }
     }
@@ -483,6 +488,9 @@ public partial class MainWindow : Window
                     autoOcultar = preferencias.AutoOcultar;
                     ocultarEmTelaCheia = preferencias.OcultarEmTelaCheia;
                     tempoAutoOcultarMs = TempoOcultacao.Normalizar(preferencias.TempoOcultacaoMs);
+                    opacidadeIlha = EstiloStudio.Opacity(preferencias.OpacidadeIlha);
+                    opacidadeDock = EstiloStudio.Opacity(preferencias.OpacidadeDock);
+                    posicaoDock = EstiloStudio.PosicaoDock(preferencias.PosicaoDock);
                 }
             }
             using var chave = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run");
@@ -490,12 +498,14 @@ public partial class MainWindow : Window
             AtualizarTextoAutoOcultar();
             AtualizarTextoTelaCheia();
             BotaoAutoInicio.Content = "Iniciar com Windows: " + (iniciarComWindows ? "ligado" : "desligado");
-            TextoRodape.Text = "Ander Flow • v0.4.0-dev" + (atalhoDisponivel ? "" : " • Atalho em uso");
+            TextoRodape.Text = "Ander Flow • v0.5.0-dev" + (atalhoDisponivel ? "" : " • Atalho em uso");
         }
         catch { tema = "prism"; iniciarComWindows = false; }
     }
 
-    private record Preferencias(string Tema, bool IniciarComWindows, bool DockAtivo = false, string? PapelAnterior = null, bool AutoOcultar = true, bool OcultarEmTelaCheia = true, int TempoOcultacaoMs = TempoOcultacao.PadraoMs);
+    private record Preferencias(string Tema, bool IniciarComWindows, bool DockAtivo = false, string? PapelAnterior = null,
+        bool AutoOcultar = true, bool OcultarEmTelaCheia = true, int TempoOcultacaoMs = TempoOcultacao.PadraoMs,
+        double OpacidadeIlha = EstiloStudio.OpacidadePadrao, double OpacidadeDock = 0.92, string PosicaoDock = "inferior");
 
     private void CriarBandeja()
     {
@@ -540,6 +550,7 @@ public partial class MainWindow : Window
         relogio.Stop();
         vigia.Stop();
         PararIntegracoes();
+        PararStudio();
         PararCopias();
         if (atalhoDisponivel && origemMensagens is not null)
             UnregisterHotKey(origemMensagens.Handle, HotkeyId);

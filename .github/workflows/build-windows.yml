@@ -48,22 +48,22 @@ jobs:
       - name: Empacotar versão portátil
         shell: pwsh
         run: |
-          Compress-Archive -Path "dist\portable\*" -DestinationPath "dist\Ander-Flow-Prism-Island-v0.4.0-win-x64-portable.zip" -CompressionLevel Optimal -Force
-          Get-FileHash "dist\Ander-Flow-Prism-Island-v0.4.0-win-x64-setup.exe" -Algorithm SHA256 | Select-Object Hash,Path
+          Compress-Archive -Path "dist\portable\*" -DestinationPath "dist\Ander-Flow-Prism-Island-v0.5.0-win-x64-portable.zip" -CompressionLevel Optimal -Force
+          Get-FileHash "dist\Ander-Flow-Prism-Island-v0.5.0-win-x64-setup.exe" -Algorithm SHA256 | Select-Object Hash,Path
       - name: Salvar artefatos da build
         uses: actions/upload-artifact@v4
         with:
-          name: flow-prism-island-v0.4.0-windows
+          name: flow-prism-island-v0.5.0-windows
           path: |
-            dist/Ander-Flow-Prism-Island-v0.4.0-win-x64-setup.exe
-            dist/Ander-Flow-Prism-Island-v0.4.0-win-x64-portable.zip
+            dist/Ander-Flow-Prism-Island-v0.5.0-win-x64-setup.exe
+            dist/Ander-Flow-Prism-Island-v0.5.0-win-x64-portable.zip
           if-no-files-found: error
       - name: Publicar pré-lançamento com instalador
         if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.4.0-preview.1
-          name: "Prism Island v0.4.0 — Mídia e Desktop (Prévia)"
+          tag_name: v0.5.0-preview.1
+          name: "Prism Island v0.5.0 — Premium Studio: Mídia e Desktop (Prévia)"
           prerelease: true
           draft: false
           generate_release_notes: false
@@ -76,6 +76,6 @@ jobs:
             **Ainda não é versão estável.** Layout/atalhos/monitores precisam de QA visual adicional.
             Código-fonte e notas no README.
           files: |
-            dist/Ander-Flow-Prism-Island-v0.4.0-win-x64-setup.exe
-            dist/Ander-Flow-Prism-Island-v0.4.0-win-x64-portable.zip
+            dist/Ander-Flow-Prism-Island-v0.5.0-win-x64-setup.exe
+            dist/Ander-Flow-Prism-Island-v0.5.0-win-x64-portable.zip
           fail_on_unmatched_files: true

@@ -1,5 +1,5 @@
 #define NomeApp "Ander Flow Prism Island"
-#define VersaoApp "0.4.0"
+#define VersaoApp "0.5.0"
 #define Executavel "AnderFlowPrismIsland.exe"
 
 [Setup]
@@ -15,7 +15,7 @@ PrivilegesRequired=lowest
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 OutputDir=..\dist
-OutputBaseFilename=Ander-Flow-Prism-Island-v0.4.0-win-x64-setup
+OutputBaseFilename=Ander-Flow-Prism-Island-v0.5.0-win-x64-setup
 SetupIconFile=..\apps\desktop\Assets\prism.ico
 UninstallDisplayIcon={app}\{#Executavel}
 Compression=lzma2
@@ -33,7 +33,7 @@ ChangesAssociations=no
 ChangesEnvironment=no
 ShowLanguageDialog=no
 LanguageDetectionMethod=uilanguage
-VersionInfoVersion=0.4.0.0
+VersionInfoVersion=0.5.0.0
 VersionInfoCompany=Ander Flow
 VersionInfoDescription=Instalador do Ander Flow Prism Island
 VersionInfoProductName={#NomeApp}

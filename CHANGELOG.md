@@ -1,5 +1,15 @@
 # Histórico de alterações
 
+## 0.5.0-preview — Prism Studio premium
+- Interface redesenhada com sidebar, área de mídia ampliada, gradientes, sombra e cartões.
+- Seletor de sessões de mídia do Windows, capa quando disponível e seek suportado.
+- Painel de CPU, RAM, disco e rede com dados locais.
+- Controles internos de transparência, dock superior/inferior e restauração do visual.
+- Sessões rápidas de foco: 15/25/50 minutos.
+- Removidos links de botões para Configurações do Windows; dock leva ao Studio interno.
+
+# Histórico de alterações
+
 ## 0.3.0-dev — integração Prism v2
 - Arquivos entregues por Claude integrados ao projeto Windows: design, estados compactos de música e foco, auto-ocultação, fullscreen e monitores múltiplos.
 - Aba de cópias opcional e temporária (10 textos, desativada na inicialização, exclui ao desligar/sair).
