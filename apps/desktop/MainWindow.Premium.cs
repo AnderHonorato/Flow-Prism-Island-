@@ -40,8 +40,22 @@ public partial class MainWindow
             TextoDockOpacidade.Text = Math.Round(opacidadeDock * 100) + "%";
             ComboPosicaoDock.SelectedIndex = posicaoDock == "superior" ? 1 : 0;
             janelaDock?.AtualizarPreferencias(opacidadeDock, posicaoDock);
+            CampoCor.Text = PrismVisualPersonalizacao.Cor(corAccent);
+            SliderTamanhoEntalhe.Value = PrismVisualPersonalizacao.TamanhoEntalhe(larguraBase);
+            SliderTamanhoStudio.Value = PrismVisualPersonalizacao.LarguraStudio(larguraStudio);
+            SliderIntensidade.Value = PrismVisualPersonalizacao.Intensidade(intensidadeVisual) * 100d;
+            SliderVelocidade.Value = PrismVisualPersonalizacao.Velocidade(velocidadeVisual) * 100d;
+            TextoTamanhoEntalhe.Text = Math.Round(larguraBase) + " px";
+            TextoTamanhoStudio.Text = Math.Round(larguraStudio) + " px";
+            TextoIntensidade.Text = Math.Round(intensidadeVisual * 100d) + "%";
+            TextoVelocidade.Text = Math.Round(velocidadeVisual * 100d) + "%";
+            ComboModoMini.SelectedIndex = visualMiniSempreVisivel ? 0 : 1;
         }
         finally { aplicandoPreferencias = false; }
+        AplicarVisualPersonalizado();
+        AtualizarStatusCompacto();
+        SincronizarCapturaAudio();
+        AtualizarMiniIndependente();
 
         timerSalvar.Tick += (_, _) =>
         {
@@ -98,6 +112,13 @@ public partial class MainWindow
         opacidadeIlha = EstiloStudio.OpacidadePadrao;
         opacidadeDock = 0.92;
         posicaoDock = "inferior";
+        corAccent = PrismVisualPersonalizacao.CorPadrao;
+        larguraBase = 282d;
+        larguraStudio = 752d;
+        intensidadeVisual = 1d;
+        velocidadeVisual = 1d;
+        visualMiniSempreVisivel = true;
+        visualReativoLigado = true;
         AplicarTema();
         aplicandoPreferencias = true;
         try
@@ -105,12 +126,26 @@ public partial class MainWindow
             SliderIlhaOpacidade.Value = opacidadeIlha * 100;
             SliderDockOpacidade.Value = opacidadeDock * 100;
             ComboPosicaoDock.SelectedIndex = 0;
+            CampoCor.Text = corAccent;
+            SliderTamanhoEntalhe.Value = larguraBase;
+            SliderTamanhoStudio.Value = larguraStudio;
+            SliderIntensidade.Value = intensidadeVisual * 100;
+            SliderVelocidade.Value = velocidadeVisual * 100;
+            ComboModoMini.SelectedIndex = 0;
         }
         finally { aplicandoPreferencias = false; }
         Opacity = opacidadeIlha;
         TextoOpacidade.Text = "96%";
         TextoDockOpacidade.Text = "92%";
         janelaDock?.AtualizarPreferencias(opacidadeDock, posicaoDock);
+        TextoTamanhoEntalhe.Text = "282 px";
+        TextoTamanhoStudio.Text = "752 px";
+        TextoIntensidade.Text = "100%";
+        TextoVelocidade.Text = "100%";
+        AtualizarStatusCompacto();
+        AplicarVisualPersonalizado();
+        SincronizarCapturaAudio();
+        AtualizarMiniIndependente();
         SalvarConfiguracoes();
         TextoRodape.Text = "Visual do Prism restaurado · suas opções do Windows não foram alteradas";
     }
