@@ -134,7 +134,7 @@ public partial class MainWindow : Window
 
     private void AjustarJanela(bool expandida)
     {
-        double largura = expandida ? 752 : larguraRecolhida;
+        double largura = expandida ? larguraStudio : larguraRecolhida;
         double altura = expandida ? 620 : 56;
         var area = AreaTrabalho();
         if (expandida) PainelAberto.Visibility = Visibility.Visible;
@@ -226,7 +226,11 @@ public partial class MainWindow : Window
     private void VigiarBorda()
     {
         // Consulta o Windows cerca de uma vez por segundo.
-        if (++ciclosVigia % 8 == 0) telaCheia = ocultarEmTelaCheia && EmTelaCheia();
+        if (++ciclosVigia % 8 == 0)
+        {
+            telaCheia = ocultarEmTelaCheia && EmTelaCheia();
+            AtualizarMiniIndependente();
+        }
         if (telaCheia && !ilha.EstaExpandida)
         {
             if (!oculta) Ocultar();
@@ -254,6 +258,7 @@ public partial class MainWindow : Window
     {
         oculta = true;
         Animar(TopProperty, AreaTrabalho().Top - ActualHeight - 6, 260);
+        AtualizarMiniIndependente();
     }
 
     private void Revelar()
@@ -262,6 +267,7 @@ public partial class MainWindow : Window
         if (!oculta) return;
         oculta = false;
         Animar(TopProperty, AreaTrabalho().Top + 8, 220);
+        AtualizarMiniIndependente();
     }
 
     private void AoAlternarTelaCheia(object sender, RoutedEventArgs e)
@@ -317,6 +323,8 @@ public partial class MainWindow : Window
 
     private void AtualizarAbas(string selecionada)
     {
+        bool mudou = abaAtual != selecionada;
+        abaAtual = selecionada;
         PainelMidia.Visibility = selecionada == "midia" ? Visibility.Visible : Visibility.Collapsed;
         PainelFoco.Visibility = selecionada == "foco" ? Visibility.Visible : Visibility.Collapsed;
         PainelAlertas.Visibility = selecionada == "alertas" ? Visibility.Visible : Visibility.Collapsed;
@@ -324,14 +332,14 @@ public partial class MainWindow : Window
         PainelSistema.Visibility = selecionada == "sistema" ? Visibility.Visible : Visibility.Collapsed;
         PainelAjustes.Visibility = selecionada == "ajustes" ? Visibility.Visible : Visibility.Collapsed;
         PainelCopias.Visibility = selecionada == "copias" ? Visibility.Visible : Visibility.Collapsed;
-        AbaCopias.Background = Cor(selecionada == "copias" ? "#E8622A" : "#25242A");
+        AbaCopias.Background = Cor(selecionada == "copias" ? corAccent : "#25242A");
         if (selecionada == "copias") AtualizarListaCopias();
-        AbaMidia.Background = Cor(selecionada == "midia" ? "#E8622A" : "#25242A");
-        AbaFoco.Background = Cor(selecionada == "foco" ? "#E8622A" : "#25242A");
-        AbaAlertas.Background = Cor(selecionada == "alertas" ? "#E8622A" : "#25242A");
-        AbaDesktop.Background = Cor(selecionada == "desktop" ? "#E8622A" : "#25242A");
-        AbaSistema.Background = Cor(selecionada == "sistema" ? "#E8622A" : "#25242A");
-        AbaAjustes.Background = Cor(selecionada == "ajustes" ? "#E8622A" : "#25242A");
+        AbaMidia.Background = Cor(selecionada == "midia" ? corAccent : "#25242A");
+        AbaFoco.Background = Cor(selecionada == "foco" ? corAccent : "#25242A");
+        AbaAlertas.Background = Cor(selecionada == "alertas" ? corAccent : "#25242A");
+        AbaDesktop.Background = Cor(selecionada == "desktop" ? corAccent : "#25242A");
+        AbaSistema.Background = Cor(selecionada == "sistema" ? corAccent : "#25242A");
+        AbaAjustes.Background = Cor(selecionada == "ajustes" ? corAccent : "#25242A");
         TextoTituloPainel.Text = selecionada switch
         {
             "midia" => "Sua música. Suas escolhas.",
@@ -350,6 +358,21 @@ public partial class MainWindow : Window
             _ => "Ander Flow Prism Island"
         };
         AtualizarEstadoSistema();
+        if (mudou)
+        {
+            var atual = selecionada switch
+            {
+                "midia" => (UIElement)PainelMidia,
+                "foco" => PainelFoco,
+                "alertas" => PainelAlertas,
+                "desktop" => PainelDesktop,
+                "sistema" => PainelSistema,
+                "copias" => PainelCopias,
+                _ => PainelAjustes
+            };
+            atual.BeginAnimation(OpacityProperty, new DoubleAnimation(0.18, 1d, TimeSpan.FromMilliseconds(240))
+            { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } });
+        }
     }
 
     private void AoSelecionarFoco(object sender, RoutedEventArgs e) => AtualizarAbas("foco");
@@ -434,6 +457,7 @@ public partial class MainWindow : Window
             Cor("#1C1A29");
         BotaoTema.Content = "Tema: " + (claro ? "Pérola" : mono ? "Grafite" : tema == "preto" ? "Ônix" : "Prism Flow");
         Opacity = EstiloStudio.Opacity(opacidadeIlha);
+        AplicarVisualPersonalizado();
     }
 
     private void AoAlternarTema(object sender, RoutedEventArgs e)
@@ -470,7 +494,10 @@ public partial class MainWindow : Window
         {
             Directory.CreateDirectory(Path.GetDirectoryName(caminhoConfiguracoes)!);
             File.WriteAllText(caminhoConfiguracoes,
-                JsonSerializer.Serialize(new Preferencias(tema, iniciarComWindows, dockAtivo, papelAnterior, autoOcultar, ocultarEmTelaCheia, tempoAutoOcultarMs, opacidadeIlha, opacidadeDock, posicaoDock)));
+                JsonSerializer.Serialize(new Preferencias(tema, iniciarComWindows, dockAtivo, papelAnterior,
+                    autoOcultar, ocultarEmTelaCheia, tempoAutoOcultarMs,
+                    opacidadeIlha, opacidadeDock, posicaoDock, corAccent, larguraBase, larguraStudio,
+                    intensidadeVisual, velocidadeVisual, visualMiniSempreVisivel, visualReativoLigado)));
         }
         catch (Exception erro) { TextoRodape.Text = "Falha ao salvar: " + erro.Message; }
     }
@@ -494,6 +521,13 @@ public partial class MainWindow : Window
                     opacidadeIlha = EstiloStudio.Opacity(preferencias.OpacidadeIlha);
                     opacidadeDock = EstiloStudio.Opacity(preferencias.OpacidadeDock);
                     posicaoDock = EstiloStudio.PosicaoDock(preferencias.PosicaoDock);
+                    corAccent = PrismVisualPersonalizacao.Cor(preferencias.CorAccent);
+                    larguraBase = PrismVisualPersonalizacao.TamanhoEntalhe(preferencias.TamanhoEntalhe);
+                    larguraStudio = PrismVisualPersonalizacao.LarguraStudio(preferencias.TamanhoStudio);
+                    intensidadeVisual = PrismVisualPersonalizacao.Intensidade(preferencias.IntensidadeVisual);
+                    velocidadeVisual = PrismVisualPersonalizacao.Velocidade(preferencias.VelocidadeVisual);
+                    visualMiniSempreVisivel = preferencias.MiniSempreVisivel;
+                    visualReativoLigado = preferencias.VisualReativoLigado;
                 }
             }
             using var chave = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run");
@@ -508,7 +542,10 @@ public partial class MainWindow : Window
 
     private record Preferencias(string Tema, bool IniciarComWindows, bool DockAtivo = false, string? PapelAnterior = null,
         bool AutoOcultar = true, bool OcultarEmTelaCheia = true, int TempoOcultacaoMs = TempoOcultacao.PadraoMs,
-        double OpacidadeIlha = EstiloStudio.OpacidadePadrao, double OpacidadeDock = 0.92, string PosicaoDock = "inferior");
+        double OpacidadeIlha = EstiloStudio.OpacidadePadrao, double OpacidadeDock = 0.92, string PosicaoDock = "inferior",
+        string CorAccent = PrismVisualPersonalizacao.CorPadrao, double TamanhoEntalhe = 282d,
+        double TamanhoStudio = 752d, double IntensidadeVisual = 1d, double VelocidadeVisual = 1d,
+        bool MiniSempreVisivel = true, bool VisualReativoLigado = true);
 
     private void CriarBandeja()
     {
