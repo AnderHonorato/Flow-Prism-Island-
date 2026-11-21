@@ -136,4 +136,25 @@ Testar("Métricas exibem ausência de telemetria sem inventar número", () => {
     Exigir(MetricasSistema.FormatarPercentual(54.25) == "54%", "Arredondamento");
     Exigir(MetricasSistema.FormatarMemoria(0, 0) == "Indisponível", "Sem RAM não inventar percentual");
 });
+Testar("Espectro de áudio suaviza picos e respeita silêncio", () => {
+    Exigir(EspectroAudio.Limitar(-8) == 0 && EspectroAudio.Limitar(5) == 1, "Intensidade normalizada");
+    Exigir(EspectroAudio.Suavizar(0, 1, .35) > 0 && EspectroAudio.Suavizar(0, 1, .35) < 1, "Transição fluida");
+    Exigir(EspectroAudio.Suavizar(1, 0, .15) > 0, "Queda gradual");
+    Exigir(EspectroAudio.Barra(2, 16, 0, 1) >= 0 && EspectroAudio.Barra(2, 16, 0, 1) <= 1, "Silêncio controlado");
+});
+Testar("Personalização protege tamanhos e cores inválidas", () => {
+    Exigir(PrismVisualPersonalizacao.TamanhoEntalhe(90) == 230, "Entalhe mínimo");
+    Exigir(PrismVisualPersonalizacao.TamanhoEntalhe(999) == 430, "Entalhe máximo");
+    Exigir(PrismVisualPersonalizacao.LarguraStudio(1200) == 980, "Painel máximo");
+    Exigir(PrismVisualPersonalizacao.LarguraStudio(200) == 680, "Painel mínimo");
+    Exigir(PrismVisualPersonalizacao.Cor("#23AACC") == "#23AACC", "Cor hexadecimal");
+    Exigir(PrismVisualPersonalizacao.Cor("qualquer coisa") == "#E8622A", "Cor rejeitada");
+});
+Testar("Visualizador permanente decide corretamente a ocultação", () => {
+    Exigir(PrismVisualPersonalizacao.MiniIndependente(true, true, true, false), "Sempre visível quando a ilha recolhe");
+    Exigir(!PrismVisualPersonalizacao.MiniIndependente(false, true, true, false), "Seguir entalhe");
+    Exigir(!PrismVisualPersonalizacao.MiniIndependente(true, false, true, false), "Sem reprodução");
+    Exigir(!PrismVisualPersonalizacao.MiniIndependente(true, true, true, true), "Respeitar tela cheia");
+    Exigir(!PrismVisualPersonalizacao.MiniIndependente(true, true, false, false), "Não duplicar janela visível");
+});
 Console.WriteLine($"VALIDADOS: {verificados} testes de lógica.");
