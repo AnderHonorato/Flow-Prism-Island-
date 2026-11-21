@@ -8,10 +8,11 @@
  Loaded="AoCarregar" Closing="AoFechar"
  MouseEnter="AoEntrar" MouseLeave="AoSair"
  PreviewKeyDown="AoPressionarTecla">
- <Border x:Name="BordaPrincipal" CornerRadius="23" Background="#0A0A0F"
-         BorderBrush="#585048" BorderThickness="1" SnapsToDevicePixels="True">
+ <Border x:Name="BordaPrincipal" CornerRadius="25" Background="#101019"
+         BorderBrush="#51455F" BorderThickness="1" SnapsToDevicePixels="True">
+  <Border.Effect><DropShadowEffect Color="#080610" BlurRadius="28" ShadowDepth="9" Opacity="0.68"/></Border.Effect>
   <StackPanel>
-   <Grid Height="45" MouseLeftButtonUp="AoClicarCabecalho" Cursor="Hand"
+   <Grid Height="54" MouseLeftButtonUp="AoClicarCabecalho" Cursor="Hand"
          ToolTip="Clique para abrir ou recolher. Ctrl+Shift+Espaço também funciona.">
     <Grid.ColumnDefinitions>
      <ColumnDefinition Width="46"/>
@@ -26,7 +27,7 @@
      <TextBlock x:Name="TituloPrincipal" FontWeight="Bold" FontFamily="Segoe UI"
                 FontSize="11" Foreground="#F5F5F0" Text="PRISM ISLAND"/>
      <TextBlock x:Name="StatusCompacto" FontSize="10" Foreground="#AAA49E"
-                Text="Ander Flow" />
+                Text="STUDIO DESKTOP" />
     </StackPanel>
     <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,6,0">
      <StackPanel x:Name="MiniBarras" Orientation="Horizontal" VerticalAlignment="Center"
@@ -41,29 +42,50 @@
                 VerticalAlignment="Center" HorizontalAlignment="Center" Width="22" TextAlignment="Center"/>
     </StackPanel>
    </Grid>
-   <Border x:Name="PainelAberto" Visibility="Collapsed" Padding="14,0,14,14">
-    <StackPanel>
-     <Border Height="1" Margin="2,1,2,12" Background="#383239"/>
-     <Grid Margin="5,0,5,10">
-      <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+   <Border x:Name="PainelAberto" Visibility="Collapsed" Padding="10,1,12,12">
+    <Grid>
+     <Grid.ColumnDefinitions><ColumnDefinition Width="158"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+     <Border Grid.Column="0" Background="#10111C" BorderBrush="#292838" BorderThickness="1"
+             CornerRadius="18" Margin="0,0,10,0" Padding="12,16,12,14">
       <StackPanel>
-       <TextBlock x:Name="TextoTituloPainel" Text="Um espaço para o que importa." Foreground="#F5F5F0"
-                  FontSize="16" FontWeight="SemiBold"/>
-       <TextBlock x:Name="TextoSubtitulo" Text="Rápido, discreto e sempre por perto."
-                  FontSize="11" Foreground="#98949A" Margin="0,4,0,0"/>
+       <TextBlock Text="ANDER FLOW" Foreground="#E48B59" FontSize="10" FontWeight="Bold"
+                  Margin="8,2,0,0" FontFamily="Segoe UI"/>
+       <TextBlock Text="Prism." Foreground="#F7F3F4" FontSize="26" FontWeight="Bold"
+                  Margin="6,1,0,16" FontFamily="Segoe UI"/>
+       <Border Height="1" Background="#393445" Margin="5,0,5,12"/>
+
+      <Button x:Name="AbaMidia" Content="Mídia" Style="{StaticResource AbaLateral}" Tag="{StaticResource IcMidia}" Click="AoSelecionarMidia"/>
+      <Button x:Name="AbaFoco" Content="Foco" Style="{StaticResource AbaLateral}" Tag="{StaticResource IcFoco}" Click="AoSelecionarFoco"/>
+      <Button x:Name="AbaAlertas" Content="Alertas" Style="{StaticResource AbaLateral}" Tag="{StaticResource IcAlertas}" Click="AoSelecionarAlertas"/>
+      <Button x:Name="AbaDesktop" Content="Desktop" Style="{StaticResource AbaLateral}" Tag="{StaticResource IcDesktop}" Click="AoSelecionarDesktop"/>
+      <Button x:Name="AbaSistema" Content="Sistema" Style="{StaticResource AbaLateral}" Tag="{StaticResource IcSistema}" Click="AoSelecionarSistema"/>
+      <Button x:Name="AbaAjustes" Content="Ajustes" Style="{StaticResource AbaLateral}" Tag="{StaticResource IcAjustes}" Click="AoSelecionarAjustes"/>
+      <Button x:Name="AbaCopias" Content="Cópias" Style="{StaticResource AbaLateral}" Tag="{StaticResource IcCopias}" Click="AoSelecionarCopias"/>
+
+       <Border Height="1" Background="#393445" Margin="5,13,5,9"/>
+       <TextBlock Text="SUA CENTRAL" Foreground="#B5A8B6" FontSize="9"
+                  FontWeight="Bold" Margin="8,0,0,4"/>
+       <TextBlock Text="Windows conectado" Foreground="#75DAB4" FontSize="10" Margin="8,0,0,0"/>
       </StackPanel>
-      <Button Grid.Column="1" x:Name="BotaoFixar" Content="Fixar" Style="{StaticResource Acao}"
-              Click="AoFixar" ToolTip="Manter o painel aberto"/>
-     </Grid>
-     <UniformGrid Columns="7" Margin="0,0,0,8">
-      <Button x:Name="AbaMidia" Content="Mídia" Style="{StaticResource AbaPrism}" Tag="{StaticResource IcMidia}" Click="AoSelecionarMidia"/>
-      <Button x:Name="AbaFoco" Content="Foco" Style="{StaticResource AbaPrism}" Tag="{StaticResource IcFoco}" Click="AoSelecionarFoco"/>
-      <Button x:Name="AbaAlertas" Content="Alertas" Style="{StaticResource AbaPrism}" Tag="{StaticResource IcAlertas}" Click="AoSelecionarAlertas"/>
-      <Button x:Name="AbaDesktop" Content="Desktop" Style="{StaticResource AbaPrism}" Tag="{StaticResource IcDesktop}" Click="AoSelecionarDesktop"/>
-      <Button x:Name="AbaSistema" Content="Sistema" Style="{StaticResource AbaPrism}" Tag="{StaticResource IcSistema}" Click="AoSelecionarSistema"/>
-      <Button x:Name="AbaAjustes" Content="Ajustes" Style="{StaticResource AbaPrism}" Tag="{StaticResource IcAjustes}" Click="AoSelecionarAjustes"/>
-      <Button x:Name="AbaCopias" Content="Cópias" Style="{StaticResource AbaPrism}" Tag="{StaticResource IcCopias}" Click="AoSelecionarCopias"/>
-     </UniformGrid>
+     </Border>
+     <Border Grid.Column="1" Background="#141421" CornerRadius="19" BorderBrush="#292638"
+             BorderThickness="1" Padding="17,12,17,8">
+      <StackPanel>
+       <Grid Margin="1,0,1,12">
+        <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <StackPanel>
+         <TextBlock Text="PRISM STUDIO  /  PERSONAL WORKSPACE" FontSize="9" Foreground="#D7895A"
+                    FontWeight="Bold" Margin="1,0,0,4"/>
+         <TextBlock x:Name="TextoTituloPainel" Text="Seu espaço, do seu jeito." FontSize="20"
+                    FontFamily="Segoe UI" FontWeight="SemiBold" Foreground="#FCF9F5"/>
+         <TextBlock x:Name="TextoSubtitulo" Text="Tudo acontece por aqui."
+                    FontSize="11" Foreground="#ABA8B8" Margin="1,3,0,0"/>
+        </StackPanel>
+        <Button Grid.Column="1" x:Name="BotaoFixar" Content="Fixar" ToolTip="Manter o Studio aberto"
+                Style="{StaticResource Acao}" Click="AoFixar" VerticalAlignment="Top"/>
+       </Grid>
+       <ScrollViewer Height="396" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="0,0,7,0">
      <Border x:Name="PainelMidia" Style="{StaticResource CartaoPrism}" Visibility="Collapsed">
       <StackPanel>
        <Grid Margin="1,0,1,14">
@@ -81,7 +103,7 @@
          <Border Width="116" Height="116" CornerRadius="18" Background="#362A32"
                  BorderBrush="#5C4858" BorderThickness="1" ClipToBounds="True">
           <Grid>
-           <Border x:Name="CapaPlaceholder" Background="#362338">
+           <Border x:Name="CapaPlaceholder">
             <Border.Background>
              <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
               <GradientStop Color="#E8622A" Offset="0"/>
@@ -331,6 +353,9 @@
        <TextBlock Text="Atalho global  Ctrl + Shift + Espaço" Foreground="#9D96A8" FontSize="11" Margin="7,9,0,0"/>
       </StackPanel>
      </Border>
+
+        </StackPanel>
+       </ScrollViewer>
      <Grid Margin="6,12,4,0">
       <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
       <TextBlock x:Name="TextoRodape" Text="Ander Flow • v0.4.0-dev" Foreground="#77717A"
@@ -338,7 +363,9 @@
       <Button Grid.Column="1" Content="Recolher" Style="{StaticResource Acao}"
               Padding="10,6" Click="AoRecolher"/>
      </Grid>
-    </StackPanel>
+      </StackPanel>
+     </Border>
+    </Grid>
    </Border>
   </StackPanel>
  </Border>

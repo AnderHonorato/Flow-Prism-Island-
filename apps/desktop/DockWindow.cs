@@ -96,7 +96,7 @@ public sealed class DockWindow : Window
     }
 
     private static Brush Cor(string cor) => (Brush)new BrushConverter().ConvertFromString(cor)!;
-    private static Color CorRgb(string cor) => (Color)ColorConverter.ConvertFromString(cor);
+    private static System.Windows.Media.Color CorRgb(string cor) => (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(cor);
 
     public void AtualizarPreferencias(double opacidade, string novaPosicao)
     {

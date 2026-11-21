@@ -14,6 +14,9 @@ using System.Windows.Threading;
 using Microsoft.Win32;
 using Forms = System.Windows.Forms;
 using Drawing = System.Drawing;
+using Point = System.Windows.Point;
+using Color = System.Windows.Media.Color;
+using ColorConverter = System.Windows.Media.ColorConverter;
 
 namespace AnderFlowPrismIsland;
 
