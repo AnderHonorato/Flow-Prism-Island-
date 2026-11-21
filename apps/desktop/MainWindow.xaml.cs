@@ -535,7 +535,7 @@ public partial class MainWindow : Window
             AtualizarTextoAutoOcultar();
             AtualizarTextoTelaCheia();
             BotaoAutoInicio.Content = "Iniciar com Windows: " + (iniciarComWindows ? "ligado" : "desligado");
-            TextoRodape.Text = "Ander Flow • v0.5.0-dev" + (atalhoDisponivel ? "" : " • Atalho em uso");
+            TextoRodape.Text = "Ander Flow • v0.6.0-preview" + (atalhoDisponivel ? "" : " • Atalho em uso");
         }
         catch { tema = "prism"; iniciarComWindows = false; }
     }

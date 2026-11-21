@@ -3,6 +3,8 @@ using System;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Brush = System.Windows.Media.Brush;
+using Brushes = System.Windows.Media.Brushes;
 
 namespace AnderFlowPrismIsland.Controls;
 

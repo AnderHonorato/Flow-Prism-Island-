@@ -2,7 +2,7 @@
 
 Ilha dinâmica nativa e gratuita para Windows 11, com foco em rapidez e personalização 2D, desenvolvida pela Ander Flow.
 
-**Situação:** v0.3.0-dev (fase inicial; não é release estável).
+**Situação:** v0.6.0-preview.1 (fase inicial; não é release estável).
 
 ## O que já existe no código
 - Janela WPF real, transparente, sem moldura e sempre visível; cápsula compacta que expande no mouse/clique.
@@ -76,3 +76,15 @@ A aba Desktop agora possui controles nativos para o Windows **real**: tema claro
 - Desktop Atelier aplica apenas opções nativas previamente existentes com confirmação e restauração. Não abre páginas de Configurações do Windows.
 - Notificações globais continuam dependendo de identidade de pacote/permissões específicas; sem inventar eventos.
 - O aplicativo permanece uma **prévia**, ainda sujeito a validação visual e de players no PC.
+
+## Prism Audio Motion v0.6.0 — prévia
+
+- Visualizador 2D com barras luminosas em ritmo de amplitude REAL da saída de áudio (WASAPI), com suavização de picos, atualização leve e sem gravação, arquivos ou transmissão.
+- Equalizador na área de mídia e no entalhe compacto quando uma sessão compatível estiver tocando.
+- Mini visualizador independente opcional quando o entalhe se auto-oculta: **sempre visível durante a música** ou **ocultar junto com o entalhe**. Respeita a regra de tela cheia.
+- Personalização no Studio: cinco cores, hexadecimal, largura do entalhe, largura do Studio, intensidade e velocidade do movimento. Atualização visual imediata e persistida por usuário.
+- Botões com transições animadas ao passar o cursor, realce de seleção, mudança de abas com fade e superfícies com acabamento refinado.
+- Todos os controles ficam no aplicativo; nenhum botão redireciona para páginas de Configurações do Windows.
+- Captura local da saída de áudio inicia quando uma sessão de mídia reproduz e pode ser desativada no player. Sem sessão ou acesso à saída de áudio, não afirma estar sincronizado à música.
+
+Testes automatizados: 20 testes de domínio; compilação WPF e QA visual devem passar antes da promoção da prévia.

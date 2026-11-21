@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Button = System.Windows.Controls.Button;
 
 namespace AnderFlowPrismIsland;
 
@@ -23,7 +24,6 @@ public partial class MainWindow
     private MiniVisualWindow? janelaMini;
     private DateTime proximaTentativaAudio = DateTime.MinValue;
     private string abaAtual = "midia";
-    private bool configurandoCor;
 
     private void SincronizarCapturaAudio()
     {

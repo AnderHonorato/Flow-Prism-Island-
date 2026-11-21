@@ -55,3 +55,10 @@ Fonte de verdade: docs/backlog/TAREFAS.json. Mesmo com código compilado, recurs
 - Sessões de foco configuráveis em 15, 25 ou 50 minutos.
 - Gatilhos que abriam Configurações do Windows foram removidos da interface.
 - Importante: build automatizado, validação no PC e pacote devem ser conferidos antes de considerar a versão publicada.
+
+## v0.6.0 — novo núcleo visual
+- Espectro real de áudio em painéis compacto/expandido, com captação apenas local da saída do Windows.
+- Mini janela sempre visível quando a ilha se oculta, com opção de acompanhar a ocultação e exceção em tela cheia.
+- Paleta de 5 cores + hexadecimal, larguras de entalhe/Studio, intensidade/velocidade e preferências persistentes.
+- 20 testes automatizados locais aprovados antes do lançamento.
+- QA visual: janela em Windows com 125% de DPI, navegação lateral, aba Ajustes renderizada; teste de reprodução de música real ainda pendente.

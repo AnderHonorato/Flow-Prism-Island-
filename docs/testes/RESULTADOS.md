@@ -20,3 +20,8 @@
 - Memória/CPU idle medidos, pipeline GitHub CI e controle de mídia real.
 
 Nenhuma release estável autorizada por estes resultados isolados.
+## QA v0.6.0 — 21/11/2026
+- Build local Release em Windows 11 / .NET 10 com 20 testes de lógica aprovados (sem alegar teste visual completo).
+- Fluxo de execução do WPF iniciado na sessão Pichau; painel e Aba Ajustes acessados pelo UI Automation, captura visual validada com PrintWindow.
+- Correção de medição horizontal no Studio usando ScrollViewer.ViewportWidth.
+- Ainda pendente: reproduzir um áudio real para comparar o movimento com o sinal WASAPI, conferir o mini overlay enquanto a ilha estiver oculta e testar interações físicas em DPI/monitor distintos.

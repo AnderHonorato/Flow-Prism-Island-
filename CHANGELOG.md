@@ -1,5 +1,14 @@
 # Histórico de alterações
 
+## v0.6.0-preview.1 — Audio Motion
+- Visualizador luminoso com intensidade real via WASAPI no player e no entalhe compacto.
+- Mini visualizador independente com opção de ficar presente quando a ilha oculta.
+- Cores de destaque, entrada hexadecimal, tamanhos e controle de velocidade/intensidade no próprio Studio.
+- Animações de hover, transições de aba e atualização instantânea de preferências.
+- Conteúdo da área direita limitado ao viewport para evitar recorte em DPI 125% ou ultrawide.
+
+# Histórico de alterações
+
 ## 0.5.0-preview — Prism Studio premium
 - Interface redesenhada com sidebar, área de mídia ampliada, gradientes, sombra e cartões.
 - Seletor de sessões de mídia do Windows, capa quando disponível e seek suportado.
